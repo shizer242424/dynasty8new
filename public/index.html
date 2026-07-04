@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="pl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynasty 8 | Luxury Real Estate Los Santos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        d8gold: '#D4AF37',
+                        d8golddark: '#AA8811',
+                        d8dark: '#111111',
+                        d8card: '#1a1a1a'
+                    },
+                    fontFamily: {
+                        display: ['"Playfair Display"', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0d0d0d; color: #ffffff; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0,0,0,0.75), rgba(13,13,13,1)), url('https://wallpaperaccess.com/full/842445.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .btn-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 30%; height: 200%;
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(30deg);
+            transition: none;
+            animation: shimmer 4s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { left: -60%; }
+            30% { left: 140%; }
+            100% { left: 140%; }
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- Custom scrollbar --- */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0d0d0d; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(#3a3220, #D4AF37); border-radius: 10px; border: 2px solid #0d0d0d; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+        html { scrollbar-color: #D4AF37 #0d0d0d; }
+
+        /* --- Preloader --- */
+        #preloader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #0d0d0d;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            opacity: 1;
+            transition: opacity 0.6s ease;
+        }
+        #preloader.loaded { opacity: 0; pointer-events: none; }
+        .preloader-mark {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: preloader-mark-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: opacity, transform;
+        }
+        .preloader-mark span { color: #D4AF37; display: inline-block; }
+        @keyframes preloader-mark-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .preloader-line {
+            margin-top: 1.5rem;
+            width: 140px; height: 1px;
+            background: rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .preloader-line::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+            transform: translateX(-100%);
+            animation: preloader-sweep 1.3s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes preloader-sweep { to { transform: translateX(100%); } }
+        .preloader-caption {
+            margin-top: 1.25rem;
+            font-size: 0.62rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: #6b7280;
+            font-weight: 600;
+            opacity: 0;
+            animation: preloader-caption-in 0.8s ease forwards 0.3s;
+        }
+        @keyframes preloader-caption-in { to { opacity: 1; } }
+        body.is-loading { overflow: hidden; height: 100vh; }
+
+        /* --- Ambient glow accents --- */
+        .glow-accent { position: relative; isolation: isolate; }
+        .glow-accent::before {
+            content: '';
+            position: absolute; top: -10%; left: 50%;
+            width: 60%; height: 140%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at center, rgba(212,175,55,0.10) 0%, rgba(212,175,55,0) 70%);
+            z-index: -1; pointer-events: none;
+        }
+        .hero-bg { position: relative; }
+        .hero-bg::after {
+            content: '';
+            position: absolute; inset: 0;
+            box-shadow: inset 0 0 180px 40px #0d0d0d;
+            pointer-events: none;
+        }
+
+        /* --- Scroll reveal --- */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.in-view { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1.in-view { transition-delay: 0.1s; }
+        .reveal-delay-2.in-view { transition-delay: 0.2s; }
+        .reveal-delay-3.in-view { transition-delay: 0.3s; }
+
+        /* --- Refined heading treatment --- */
+        .font-display { font-family: 'Playfair Display', serif; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .preloader-mark, .preloader-caption { animation: none; opacity: 1; transform: none; }
+            .preloader-line::after { animation: none; }
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden is-loading">
+
+    <div id="preloader">
+        <div class="preloader-mark">DYNASTY <span>8</span></div>
+        <div class="preloader-line"></div>
+        <span class="preloader-caption">Los Santos &middot; Real Estate</span>
+    </div>
+
+    <script>
+        // Ukrycie ekranu ładowania (minimalny czas wyświetlania dla płynności)
+        (function() {
+            const MIN_DISPLAY_MS = 1200;
+            const startedAt = Date.now();
+            function hidePreloader() {
+                const elapsed = Date.now() - startedAt;
+                const wait = Math.max(MIN_DISPLAY_MS - elapsed, 0);
+                setTimeout(() => {
+                    const pre = document.getElementById('preloader');
+                    if (pre) pre.classList.add('loaded');
+                    document.body.classList.remove('is-loading');
+                    setTimeout(() => pre && pre.remove(), 800);
+                }, wait);
+            }
+            if (document.readyState === 'complete') {
+                hidePreloader();
+            } else {
+                window.addEventListener('load', hidePreloader);
+            }
+        })();
+
+        // Animacje pojawiania się sekcji przy scrollowaniu
+        document.addEventListener('DOMContentLoaded', function() {
+            const revealEls = document.querySelectorAll('.reveal');
+            if ('IntersectionObserver' in window && revealEls.length) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('in-view');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+                revealEls.forEach(el => io.observe(el));
+            } else {
+                revealEls.forEach(el => el.classList.add('in-view'));
+            }
+        });
+    </script>
+
+    <div id="detailsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-d8card border border-zinc-800 w-full max-w-3xl rounded-xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col animate__animated animate__fadeInUp animate__faster">
+            <div class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+                <div>
+                    <span id="modalBadge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-zinc-700 text-white mr-2">Status</span>
+                    <h2 id="modalTitle" class="font-display text-xl font-bold text-white inline-block mt-1">Nazwa Obiektu</h2>
+                </div>
+                <button onclick="closeModal()" class="text-zinc-400 hover:text-white text-2xl font-semibold p-2 transition-colors">&times;</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-6 flex-1 text-sm text-zinc-300">
+                <div class="w-full h-80 rounded-lg overflow-hidden bg-zinc-950 relative group/slider">
+                    <img id="modalImg" src="" class="w-full h-full object-cover transition-all duration-300">
+                    <div id="modalPriceTag" class="absolute bottom-4 right-4 bg-d8dark/90 border border-d8gold text-d8gold font-black px-4 py-2 rounded-lg text-lg z-10">
+                        $0
+                    </div>
+                    <button id="modalPrevBtn" onclick="changeModalImage(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-d8gold hover:text-d8dark text-white p-3 rounded-full transition-all opacity-0 group-hover/slider:opacity-100 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button id="modalNextBtn" onclick="changeModalImage(1)" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-d8gold hover:text-d8dark text-white p-3 rounded-full transition-all opacity-0 group-hover/slider:opacity-100 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <div id="modalImageCounter" class="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded text-xs text-zinc-300 font-mono tracking-wider">
+                        1 / 1
+                    </div>
+                </div>
+
+                <div id="modalGallerySection" class="space-y-2">
+                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Wszystkie zdjęcia w galerii</span>
+                    <div id="modalThumbsContainer" class="flex gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-zinc-900/40 p-4 rounded-lg border border-zinc-800/80">
+                    <div>
+                        <span id="modalLocationLabel" class="text-[10px] text-zinc-500 block uppercase font-bold">Lokalizacja / Rejon</span>
+                        <span id="modalLocation" class="text-white font-medium">Brak danych</span>
+                    </div>
+                    <div>
+                        <span id="modalSpec1Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Pokoje</span>
+                        <span id="modalSpec1" class="text-white font-medium">Brak danych</span>
+                    </div>
+                    <div>
+                        <span id="modalSpec2Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Garaż</span>
+                        <span id="modalSpec2" class="text-white font-medium">Brak danych</span>
+                    </div>
+                </div>
+
+                <div id="modalExtraSpecsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-zinc-900/40 p-4 rounded-lg border border-zinc-800/80">
+                    <div>
+                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Garaż</span>
+                        <span id="modalGarageStatus" class="text-white font-medium">Brak danych</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Pojemność garażu</span>
+                        <span id="modalGarageCapacity" class="text-white font-medium">Brak danych</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Czynsz</span>
+                        <span id="modalRent" class="text-white font-medium">Brak danych</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Dostępne klucze</span>
+                        <span id="modalKeys" class="text-white font-medium">Brak danych</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider block">Opis nieruchomości</span>
+                    <p id="modalDesc" class="leading-relaxed bg-zinc-900/20 p-4 rounded-lg border border-zinc-850 text-zinc-300">
+                        Tutaj znajduje się pełna treść opisu.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-zinc-900/80 border-t border-zinc-800 flex justify-between items-center">
+                <span class="text-xs text-zinc-500">Zgłoś się do agenta podając nazwę obiektu.</span>
+                <button onclick="closeModal(); document.getElementById('contact').scrollIntoView({behavior: 'smooth'})" class="bg-d8gold hover:bg-d8golddark text-d8dark font-bold px-5 py-2 rounded text-xs uppercase tracking-wider transition-all">
+                    Zgłoś chęć zakupu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cennikModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-d8card border border-zinc-800 w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 animate__animated animate__fadeInUp animate__faster">
+            <div class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+                <div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-d8gold text-d8dark mr-2">USŁUGI EKSKLUZYWNE</span>
+                    <h2 class="text-xl font-bold text-white inline-block mt-1">Cennik Projektowania i Aranżacji</h2>
+                </div>
+                <button onclick="closeCennikModal()" class="text-zinc-400 hover:text-white text-2xl font-semibold p-2 transition-colors">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-4 text-sm text-zinc-300">
+                <p class="text-zinc-400">Oferujemy kompleksowe podejście do zagospodarowania przestrzeni. Wybierz pakiet idealny dla Twojego apartamentu lub rezydencji:</p>
+                
+                <div class="space-y-3">
+                    <div class="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-white text-base">Pakiet Podstawowy (Odświeżenie)</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">Układ funkcjonalny mebli, dobór kolorystyki ścian oraz podstawowego oświetlenia.</p>
+                        </div>
+                        <span class="text-d8gold font-mono font-black text-lg ml-4">$45,000</span>
+                    </div>
+
+                    <div class="p-4 bg-zinc-900/80 border border-d8gold/30 rounded-lg flex justify-between items-center relative overflow-hidden">
+                        <span class="absolute top-0 right-0 bg-d8gold text-d8dark font-bold text-[8px] tracking-widest uppercase px-2 py-0.5 rounded-bl">Najpopularniejszy</span>
+                        <div>
+                            <h4 class="font-bold text-white text-base">Pakiet Luksusowy (Kompleksowy)</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">Projekt koncepcyjny 3D, pełny dobór mebli premium, przebudowa ścian i luksusowe dodatki.</p>
+                        </div>
+                        <span class="text-d8gold font-mono font-black text-lg ml-4">$95,000</span>
+                    </div>
+
+                    <div class="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-white text-base">Projekt Rezydencji "Pod Klucz"</h4>
+                            <p class="text-xs text-zinc-400 mt-0.5">Dedykowany dla willi Vinewood. Nadzór architekta, unikalne meble na zamówienie, system Smart Home.</p>
+                        </div>
+                        <span class="text-d8gold font-mono font-black text-lg ml-4">$180,000</span>
+                    </div>
+
+                    <div class="p-4 bg-zinc-900/30 border border-zinc-850 rounded-lg flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-zinc-400 text-sm">Konsultacja lub poprawki projektowe</h4>
+                            <p class="text-xs text-zinc-500 mt-0.5">Jednorazowa pomoc architekta wnętrz przy drobnych poprawkach lub zmianie umeblowania.</p>
+                        </div>
+                        <span class="text-zinc-400 font-mono font-bold text-sm ml-4">$15,000</span>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-d8gold/5 border border-d8gold/20 rounded-lg text-xs text-zinc-400 leading-relaxed mt-4">
+                    <strong class="text-d8gold">Uwaga:</strong> Podane kwoty mają charakter poglądowy i zależą w całości od wielkości nieruchomości (liczby metrów/pokoi) oraz stopnia skomplikowania instalacji. Po więcej szczegółów zgłoś się do jednego z naszych agentów.
+                </div>
+            </div>
+
+            <div class="p-4 bg-zinc-900/80 border-t border-zinc-800 flex justify-end">
+                <button onclick="closeCennikModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-6 py-2 rounded text-xs uppercase tracking-wider transition-all">
+                    Zamknij
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="border-b border-zinc-800 bg-d8dark/90 backdrop-blur-md fixed w-full z-50 transition-all duration-500 animate__animated animate__fadeInDown">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 group cursor-pointer" onclick="showView('main')">
+                <span class="font-display text-2xl font-bold tracking-wider text-white">
+                    DYNASTY <span class="text-d8gold inline-block transition-transform duration-500 ease-in-out group-hover:rotate-180">8</span>
+                </span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide text-zinc-300">
+                <button onclick="showView('all-properties')" class="hover:text-d8gold transition-all duration-300">Nieruchomości</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('interiors').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Aranżacje</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('calculator').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Kredyty</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('agents').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Agenci</button>
+                <a href="#admin-section" class="text-zinc-500 hover:text-d8gold transition-all duration-300">⚙ Panel Admina</a>
+            </div>
+            <div>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 100)" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark px-5 py-2.5 rounded text-sm font-bold tracking-wide transition-all duration-300 uppercase shadow-lg block">Zgłoś Ofertę</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="view-main" class="view-section">
+        <section class="hero-bg glow-accent min-h-[70vh] flex flex-col justify-center pt-20">
+            <div class="max-w-5xl mx-auto px-4 w-full text-center mb-6 animate__animated animate__fadeInUp">
+                <span class="text-d8gold font-semibold tracking-widest text-xs uppercase bg-d8gold/10 px-3 py-1 rounded-full border border-d8gold/20">Witaj w krainie luksusu</span>
+                <h1 class="font-display text-4xl md:text-6xl font-bold tracking-tight mt-6 mb-6 leading-tight">Znajdź Swoje Miejsce <br>w <span class="text-d8gold italic">Los Santos</span></h1>
+                <p class="text-zinc-400 text-lg max-w-2xl mx-auto">Ekskluzywne apartamenty, luksusowe wille w Vinewood Hills oraz nowoczesne biura. Zamieszkaj tam, gdzie rodzą się legendy.</p>
+                <div class="mt-8">
+                    <button onclick="showView('all-properties')" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark font-bold px-8 py-3.5 rounded text-sm tracking-wide transition-all uppercase shadow-lg shadow-d8gold/20">
+                        Przeglądaj pełną ofertę
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-6xl mx-auto px-4 -mt-16 relative z-10">
+            <div class="bg-d8card/95 backdrop-blur-md p-6 rounded-xl border border-zinc-800 shadow-2xl grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Lokalizacja</label>
+                    <select id="mainSearchLocation" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Wszystkie lokalizacje</option>
+                        <option value="Vinewood">Vinewood Hills</option>
+                        <option value="Del Perro">Del Perro</option>
+                        <option value="Rockford Hills">Rockford Hills</option>
+                        <option value="Pillbox Hill">Pillbox Hill</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Typ obiektu</label>
+                    <select id="mainSearchType" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Wszystkie typy</option>
+                        <option value="apartament">Penthouse / Apartament</option>
+                        <option value="willa">Willa / Dom (w tym nowe)</option>
+                        <option value="biuro">Biuro komercyjne</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Budżet maksymalny</label>
+                    <select id="mainSearchPrice" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Bez limitu</option>
+                        <option value="250000">do $250,000</option>
+                        <option value="500000">do $500,000</option>
+                        <option value="1500000">do $1,500,000</option>
+                        <option value="3000000">do $3,000,000</option>
+                        <option value="5000000">do $5,000,000</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="applyMainFilters()" class="w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 px-6 rounded shadow-lg uppercase text-xs tracking-wider transition-all duration-300">Szukaj Ofert</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-normal-properties" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+            <div class="reveal flex justify-between items-end mb-8">
+                <div>
+                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Rynek Wtórny</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Mieszkania i Posiadłości Dynasty</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="slideCarousel('left')" class="bg-zinc-900 border border-zinc-800 hover:border-d8gold text-white p-3 rounded-lg transition-all duration-300 active:scale-90">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button onclick="slideCarousel('right')" class="bg-zinc-900 border border-zinc-800 hover:border-d8gold text-white p-3 rounded-lg transition-all duration-300 active:scale-90">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="relative w-full">
+                <div id="propertiesCarousel" class="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar snap-x snap-mandatory pb-4"></div>
+            </div>
+        </section>
+
+        <section id="section-dev-properties" class="py-16 bg-zinc-950 border-y border-zinc-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="reveal mb-10 text-center md:text-left">
+                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Rynek Pierwotny</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Mieszkania Deweloperskie Dynasty</h2>
+                    <p class="text-zinc-500 text-sm mt-1">Sprawdź szacunkowe koszty zakupu nowych, deweloperskich obiektów w poszczególnych rejonach miasta.</p>
+                </div>
+                <div id="developerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <section id="interiors" class="py-20 bg-zinc-900/60 border-b border-zinc-900">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Ekskluzywne Projekty</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Aranżacja i Wykończenie Wnętrz</h2>
+                </div>
+
+                <div class="reveal bg-d8card rounded-xl border border-zinc-800 shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+                    <div class="relative h-64 md:h-auto min-h-[250px]">
+                        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Aranżacja wnętrz" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-d8dark via-transparent to-transparent"></div>
+                    </div>
+                    <div class="p-8 flex flex-col justify-center space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Stwórz wnętrze swoich marzeń</h3>
+                            <p class="text-zinc-400 text-sm leading-relaxed">
+                                Oferujemy kompleksowe usługi projektowania i wykańczania wnętrz dla apartamentów oraz rezydencji na terenie całego Los Santos. Nasi architekci zadbają o każdy, nawet najmniejszy detal.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="openCennikModal()" class="btn-shimmer w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 px-4 rounded text-xs uppercase tracking-wider text-center transition-all">
+                                💰 Cennik usług
+                            </button>
+                            <button onclick="showView('arrangements')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 px-4 rounded text-xs uppercase tracking-wider text-center border border-zinc-700 transition-all">
+                                📷 Wykonane aranżacje
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <div class="reveal flex justify-between items-center mb-4">
+                        <span class="text-xs font-semibold text-zinc-500 uppercase tracking-widest">Ostatnio zrealizowane</span>
+                        <button onclick="showView('arrangements')" class="text-xs text-purple-400 hover:underline uppercase tracking-wider font-semibold">Zobacz wszystkie &rarr;</button>
+                    </div>
+                    <div id="interiorsLatestGrid" class="reveal grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="calculator" class="py-20 bg-zinc-1000 border-b border-zinc-900">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-6">
+                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Finansowanie Fleeca Bank</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Kalkulator Kredytu Hipotecznego</h2>
+                </div>
+                <div class="max-w-2xl mx-auto text-center mb-12 bg-zinc-900/40 p-6 rounded-lg border border-zinc-800 text-sm text-zinc-300 leading-relaxed space-y-3">
+                    <p>Nasze kredyty hipoteczne are w całości obsługiwane przez sprawdzonych doradców finansowych <strong class="text-white">Fleeca Bank</strong>. Dzięki uproszczonemu procesowi finansowania możesz zrealizować marzenie o własnej posiadłości w Los Santos w zaledwie kilka dni.</p>
+                    <p><strong class="text-d8gold">Jak to działa i jak otrzymać kredyt?</strong> Wybierz koszt nieruchomości za pomocą suwaka, a system automatycznie obliczy Twój wymagany wkład własny oraz ratę tygodniową. Aby złożyć wniosek, skontaktuj się z naszym agentem, przedstaw dokument tożsamości oraz dowód posiadania środków na wkład własny.</p>
+                </div>
+
+                <div class="reveal bg-d8card p-8 rounded-xl border border-zinc-800 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6 flex flex-col justify-center">
+                        <div>
+                            <div class="flex justify-between mb-2"><label class="text-sm font-medium text-zinc-300">Koszt kredytu (Wartość nieruchomości)</label><span class="text-d8gold font-bold" id="valPrice">$1,500,000</span></div>
+                            <input type="range" min="100000" max="1500000" step="50000" value="1500000" class="w-full accent-d8gold" id="inputPrice" oninput="calculateLoan()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-2">Okres spłaty</label>
+                            <select class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold" id="inputTerm" onchange="calculateLoan()">
+                                <option value="4">4 tygodnie</option>
+                                <option value="5">5 tygodni</option>
+                                <option value="6">6 tygodni</option>
+                                <option value="7">7 tygodni</option>
+                                <option value="8" selected>8 tygodni</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800 flex flex-col justify-center items-center text-center">
+                        <span class="text-zinc-400 text-xs font-semibold uppercase tracking-widest mb-1">Rata tygodniowa</span>
+                        <span class="text-4xl font-extrabold text-d8gold" id="weeklyPayment">$0</span>
+                        <div class="w-full border-t border-zinc-800 my-4 pt-4 text-xs text-zinc-400 space-y-1.5 text-left">
+                            <div class="flex justify-between"><span>Wymagany wkład własny (40% + $5,000):</span> <span class="font-bold text-white" id="downPaymentAmount">$0</span></div>
+                            <div class="flex justify-between"><span>Pozostała kwota finansowania:</span> <span class="font-bold text-white" id="loanAmount">$0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="agents" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Nasi specjaliści</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold">Poznaj Naszych Agentów</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="reveal bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
+                    <img src="https://ui-avatars.com/api/?name=Michael+De+Santa&background=D4AF37&color=111&size=128" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                    <h3 class="font-display font-bold text-lg">Drex Reeve</h3>
+                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">OWNER</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
+                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ NUMER</span>
+                </div>
+                <div class="reveal reveal-delay-1 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
+                    <img src="https://ui-avatars.com/api/?name=Franklin+Clinton&background=D4AF37&color=111&size=128" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                    <h3 class="font-display font-bold text-lg">Nyx Reeve</h3>
+                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">CO-OWNER</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS.</p>
+                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ NUMER</span>
+                </div>
+                <div class="reveal reveal-delay-2 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
+                    <img src="https://ui-avatars.com/api/?name=Trevor+Philips&background=777&color=fff&size=128" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                    <h3 class="font-display font-bold text-lg">MADI</h3>
+                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">AGENT</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
+                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ 555-0199</span>
+                </div>
+                <div class="reveal reveal-delay-3 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
+                    <img src="https://ui-avatars.com/api/?name=Lamar+Davis&background=D4AF37&color=111&size=128" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                    <h3 class="font-display font-bold text-lg">TURNER</h3>
+                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">AGENT</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
+                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ 555-0111</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 bg-zinc-950 border-t border-zinc-900">
+            <div class="max-w-3xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Skontaktuj Się z Nami</h2>
+                </div>
+                <form class="reveal bg-d8card p-8 rounded-xl border border-zinc-800 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="text" placeholder="Imię i Nazwisko / Nick IC" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <input type="text" placeholder="Numer Telefonu" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                    </div>
+                    <textarea rows="4" placeholder="Treść wiadomości..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold"></textarea>
+                    <button type="button" class="btn-shimmer w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 rounded uppercase text-sm tracking-wider">Wyślij Zgłoszenie</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div id="view-all-properties" class="view-section hidden pt-24 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-6 mb-8 gap-4">
+                <div>
+                    <button onclick="showView('main')" class="text-xs text-d8gold hover:underline uppercase tracking-widest flex items-center gap-1 mb-2">← Powrót do Strony Głównej</button>
+                    <h1 class="font-display text-3xl md:text-4xl font-bold">Pełna Oferta Dynasty 8</h1>
+                    <p class="text-zinc-500 text-sm mt-1">Przeglądaj wszystkie połączone bazy rynku wtórnego oraz projektów deweloperskich.</p>
+                </div>
+                <button onclick="resetFilters()" class="text-zinc-400 hover:text-d8gold text-sm font-medium flex items-center gap-1 bg-zinc-900 px-4 py-2 border border-zinc-800 rounded-lg hover:border-d8gold transition-all">Resetuj filtry &times;</button>
+            </div>
+
+            <div class="bg-d8card p-6 rounded-xl border border-zinc-800 mb-12 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Lokalizacja / Rejon</label>
+                    <select id="searchLocation" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Wszystkie lokalizacje</option>
+                        <option value="Vinewood">Vinewood Hills</option>
+                        <option value="Del Perro">Del Perro</option>
+                        <option value="Rockford Hills">Rockford Hills</option>
+                        <option value="Pillbox Hill">Pillbox Hill</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Typ / Standard oferty</label>
+                    <select id="searchType" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Wszystkie typy</option>
+                        <option value="apartament">Penthouse / Apartament</option>
+                        <option value="willa">Willa / Posiadłość domowa</option>
+                        <option value="biuro">Biuro komercyjne</option>
+                        <option value="deweloperski">Tylko Pakiety Nowych Domów</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Maksymalny budżet</label>
+                    <select id="searchPrice" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <option value="all">Bez limitu finansowego</option>
+                        <option value="250000">do $250,000</option>
+                        <option value="500000">do $500,000</option>
+                        <option value="1500000">do $1,500,000</option>
+                        <option value="3000000">do $3,000,000</option>
+                        <option value="5000000">do $5,000,000</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="filterProperties()" class="w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 px-6 rounded shadow-lg uppercase text-xs tracking-wider transition-all duration-300">Filtruj Wyniki</button>
+                </div>
+            </div>
+
+            <div id="allPropertiesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+            
+            <div id="noResults" class="hidden text-center py-20 border border-dashed border-zinc-800 rounded-xl mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-zinc-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5" /></svg>
+                <p class="text-zinc-400 text-lg font-medium">Brak nieruchomości spełniających podane kryteria.</p>
+                <button onclick="resetFilters()" class="text-d8gold text-sm mt-2 hover:underline">Wyczyść parametry wyszukiwania</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-arrangements" class="view-section hidden pt-24 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-6 mb-8 gap-4">
+                <div>
+                    <button onclick="showView('main')" class="text-xs text-purple-400 hover:underline uppercase tracking-widest flex items-center gap-1 mb-2">← Powrót do Strony Głównej</button>
+                    <h1 class="font-display text-3xl md:text-4xl font-bold">Wykonane Aranżacje Dynasty 8</h1>
+                    <p class="text-zinc-500 text-sm mt-1">Zrealizowane projekty wnętrz wraz z wykonawcą i kosztem realizacji.</p>
+                </div>
+            </div>
+
+            <div id="arrangementsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+
+            <div id="noArrangements" class="hidden text-center py-20 border border-dashed border-zinc-800 rounded-xl mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-zinc-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <p class="text-zinc-400 text-lg font-medium">Brak dodanych aranżacji.</p>
+            </div>
+        </div>
+    </div>
+
+    <section id="admin-section" class="py-20 bg-zinc-900 border-t-2 border-d8gold/30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-8">
+                <span class="text-xs font-mono uppercase bg-zinc-800 text-zinc-400 px-3 py-1 rounded border border-zinc-700">Firebase Realtime Database LIVE CMS</span>
+                <h2 class="text-2xl font-bold mt-2">⚙ Panel Zarządzania Dynasty 8</h2>
+            </div>
+
+            <div id="admin-login-box" class="max-w-md mx-auto bg-d8card p-6 rounded-xl border border-zinc-800 shadow-xl">
+                <p class="text-xs text-zinc-400 mb-4 text-center">Dane logowania: admin / admin123</p>
+                <div class="space-y-4">
+                    <input type="text" id="admin-user" placeholder="Login" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
+                    <input type="password" id="admin-pass" placeholder="Hasło" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
+                    <button onclick="handleAdminLogin()" class="w-full bg-zinc-800 hover:bg-d8gold hover:text-d8dark text-white font-bold py-2.5 rounded text-sm">Zaloguj się</button>
+                    <p id="login-error" class="text-xs text-red-500 hidden text-center font-medium mt-2">Niepoprawny login lub hasło!</p>
+                </div>
+            </div>
+
+            <div id="admin-panel-box" class="hidden space-y-8 animate__animated animate__fadeIn">
+                <div class="flex justify-between items-center bg-d8card p-4 rounded-xl border border-zinc-800">
+                    <span class="text-sm font-semibold text-emerald-400 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Połączono z chmurą Firebase</span>
+                    <button onclick="handleAdminLogout()" class="bg-red-950/40 border border-red-800 hover:bg-red-800 text-red-200 px-4 py-1.5 rounded text-xs font-semibold">Wyloguj</button>
+                </div>
+                
+                <div class="flex border-b border-zinc-800 text-sm gap-2">
+                    <button id="tabBtnNormal" onclick="switchAdminTab('normal')" class="border-b-2 border-d8gold text-d8gold font-bold px-4 py-2 transition-all">Zarządzaj Mieszkaniami Dynasty</button>
+                    <button id="tabBtnDev" onclick="switchAdminTab('dev')" class="text-zinc-400 font-medium px-4 py-2 hover:text-white transition-all">Zarządzaj Ofertami Deweloperskich</button>
+                    <button id="tabBtnArr" onclick="switchAdminTab('arr')" class="text-zinc-400 font-medium px-4 py-2 hover:text-white transition-all">Zarządzaj Aranżacjami</button>
+                </div>
+
+                <div id="adminTabNormal" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-d8card p-6 rounded-xl border border-zinc-800 h-fit space-y-4">
+                        <h3 id="form-title" class="font-bold text-lg text-d8gold border-b border-zinc-800 pb-2">Dodaj Mieszkanie Dynasty</h3>
+                        <input type="hidden" id="prop-id">
+                        <input type="text" id="prop-title" placeholder="Nazwa Obiektu" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="prop-location" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="Vinewood">Vinewood Hills</option>
+                                <option value="Del Perro">Del Perro</option>
+                                <option value="Rockford Hills">Rockford Hills</option>
+                                <option value="Pillbox Hill">Pillbox Hill</option>
+                            </select>
+                            <select id="prop-type" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="apartament">Apartament</option>
+                                <option value="willa">Willa</option>
+                                <option value="biuro">Biuro</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="prop-price" placeholder="Cena ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="text" id="prop-status" placeholder="Status (np. Wolny)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="prop-rooms" placeholder="np. 3 Pokoje" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <select id="prop-has-garage" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="tak">Garaż: Tak</option>
+                                <option value="nie">Garaż: Nie</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="prop-garage-capacity" placeholder="Pojemność (aut)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="prop-rent" placeholder="Czynsz ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="prop-keys" placeholder="Dostępne klucze" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[10px] text-zinc-500 font-bold uppercase">Galeria zdjęć obiektu:</label>
+                                <button type="button" onclick="addAdminImageInput('')" class="bg-d8gold/10 hover:bg-d8gold text-d8gold hover:text-d8dark text-[10px] font-bold px-2 py-0.5 rounded border border-d8gold/30 transition-all flex items-center gap-1">
+                                    <span>+ Dodaj zdjęcie</span>
+                                </button>
+                            </div>
+                            <div id="admin-images-wrapper" class="space-y-2 max-h-40 overflow-y-auto pr-1 no-scrollbar">
+                                <div class="flex gap-2 items-center admin-img-row">
+                                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="prop-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <textarea id="prop-desc" rows="3" placeholder="Opis..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white"></textarea>
+                        <div class="flex gap-2">
+                            <button onclick="window.saveProperty()" class="flex-1 bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-2 rounded text-sm">Zapisz</button>
+                            <button onclick="window.clearForm()" class="bg-zinc-800 text-zinc-400 py-2 px-3 rounded text-sm">Anuluj</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-d8card p-6 rounded-xl border border-zinc-800 space-y-4">
+                        <div id="admin-list-container" class="space-y-3 max-h-[550px] overflow-y-auto pr-2"></div>
+                    </div>
+                </div>
+
+                <div id="adminTabDev" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-d8card p-6 rounded-xl border border-zinc-800 h-fit space-y-4">
+                        <h3 id="dev-form-title" class="font-bold text-lg text-amber-500 border-b border-zinc-800 pb-2">Dodaj Pakiet Deweloperski</h3>
+                        <input type="hidden" id="dev-id">
+                        <input type="text" id="dev-district" placeholder="Nazwa Dzielnicy (np. Del Perro)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="dev-price-min" placeholder="Cena od ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="dev-price-max" placeholder="Cena do ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="dev-has-garage" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="tak">Garaż: Tak</option>
+                                <option value="nie">Garaż: Nie</option>
+                            </select>
+                            <input type="number" id="dev-garage-capacity" placeholder="Pojemność (aut)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="dev-rent" placeholder="Czynsz ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="dev-keys" placeholder="Dostępne klucze" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[10px] text-zinc-500 font-bold uppercase">Zdjęcia dzielnicy / pakietu:</label>
+                                <button type="button" onclick="addAdminDevImageInput('')" class="bg-amber-500/10 hover:bg-amber-500 text-amber-500 hover:text-d8dark text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/30 transition-all flex items-center gap-1">
+                                    <span>+ Dodaj zdjęcie</span>
+                                </button>
+                            </div>
+                            <div id="admin-dev-images-wrapper" class="space-y-2 max-h-40 overflow-y-auto pr-1 no-scrollbar">
+                                <div class="flex gap-2 items-center admin-dev-img-row">
+                                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="dev-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <textarea id="dev-notes" rows="3" placeholder="Dodatkowe notatki..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white"></textarea>
+                        <div class="flex gap-2">
+                            <button onclick="window.saveDevProperty()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-d8dark font-bold py-2 rounded text-sm">Zapisz Pakiet</button>
+                            <button onclick="window.clearDevForm()" class="bg-zinc-800 text-zinc-400 py-2 px-3 rounded text-sm">Anuluj</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-d8card p-6 rounded-xl border border-zinc-800 space-y-4">
+                        <div id="admin-dev-list-container" class="space-y-3 max-h-[550px] overflow-y-auto pr-2"></div>
+                    </div>
+                </div>
+
+                <div id="adminTabArr" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-d8card p-6 rounded-xl border border-zinc-800 h-fit space-y-4">
+                        <h3 id="arr-form-title" class="font-bold text-lg text-purple-400 border-b border-zinc-800 pb-2">Dodaj Aranżację</h3>
+                        <input type="hidden" id="arr-id">
+                        <input type="text" id="arr-title" placeholder="Nazwa Realizacji (np. Penthouse Rockford)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="arr-executor" placeholder="Wykonawca (np. Michael De Santa)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="arr-price" placeholder="Cena realizacji ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        </div>
+                        <input type="text" id="arr-category" placeholder="Kategoria (np. Pakiet Luksusowy)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-[10px] text-zinc-500 font-bold uppercase">Zdjęcia realizacji:</label>
+                                <button type="button" onclick="addAdminArrImageInput('')" class="bg-purple-400/10 hover:bg-purple-400 text-purple-400 hover:text-d8dark text-[10px] font-bold px-2 py-0.5 rounded border border-purple-400/30 transition-all flex items-center gap-1">
+                                    <span>+ Dodaj zdjęcie</span>
+                                </button>
+                            </div>
+                            <div id="admin-arr-images-wrapper" class="space-y-2 max-h-40 overflow-y-auto pr-1 no-scrollbar">
+                                <div class="flex gap-2 items-center admin-arr-img-row">
+                                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="arr-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <textarea id="arr-desc" rows="3" placeholder="Opis realizacji..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white"></textarea>
+                        <div class="flex gap-2">
+                            <button onclick="window.saveArrangement()" class="flex-1 bg-purple-400 hover:bg-purple-500 text-d8dark font-bold py-2 rounded text-sm">Zapisz Aranżację</button>
+                            <button onclick="window.clearArrForm()" class="bg-zinc-800 text-zinc-400 py-2 px-3 rounded text-sm">Anuluj</button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-d8card p-6 rounded-xl border border-zinc-800 space-y-4">
+                        <div id="admin-arr-list-container" class="space-y-3 max-h-[550px] overflow-y-auto pr-2"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-zinc-900 py-8 bg-d8dark text-center text-xs text-zinc-500">
+        <p>&copy; 2026 Dynasty 8 Real Estate. Wszelkie prawa zastrzeżone. Projekt na potrzeby Roleplay (GTA V).</p>
+    </footer>
+
+    <script>
+        let loadedNormalProperties = [];
+        let loadedDevProperties = [];
+        let loadedArrangements = [];
+        let currentModalImages = [];
+        let currentModalImageIndex = 0;
+
+        // FUNKCJE OBSŁUGI NOWEGO MODALA CENNIKA
+        function openCennikModal() {
+            const modal = document.getElementById('cennikModal');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeCennikModal() {
+            document.getElementById('cennikModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Zamknięcie modali po kliknięciu poza ich obszarem
+        window.addEventListener('click', function(e) {
+            const cennikModal = document.getElementById('cennikModal');
+            const detailsModal = document.getElementById('detailsModal');
+            if(e.target === cennikModal) closeCennikModal();
+            if(e.target === detailsModal) closeModal();
+        });
+
+        window.addAdminImageInput = function(val = '') {
+            const wrapper = document.getElementById('admin-images-wrapper');
+            const rowsCount = wrapper.querySelectorAll('.admin-img-row').length;
+            const newIndex = rowsCount + 1;
+
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center admin-img-row animate__animated animate__fadeInUp animate__faster";
+            div.innerHTML = `
+                <input type="text" value="${val}" placeholder="URL Zdjęcia ${newIndex}" class="prop-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                <button type="button" onclick="this.parentElement.remove(); updateAdminImageIndices();" class="w-8 h-8 flex items-center justify-center bg-red-950/40 hover:bg-red-800 text-red-400 hover:text-white rounded border border-red-900/50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        window.updateAdminImageIndices = function() {
+            const wrapper = document.getElementById('admin-images-wrapper');
+            const inputs = wrapper.querySelectorAll('.prop-img-input');
+            inputs.forEach((input, index) => {
+                input.placeholder = `URL Zdjęcia ${index + 1}` + (index === 0 ? ' (Główne)' : '');
+                if (index === 0) {
+                    const row = input.parentElement;
+                    if(!row.querySelector('div')) {
+                        const btn = row.querySelector('button');
+                        if (btn) btn.remove();
+                        const counter = document.createElement('div');
+                        counter.className = "w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800";
+                        counter.innerText = "1";
+                        row.appendChild(counter);
+                    }
+                }
+            });
+        }
+
+        window.addAdminDevImageInput = function(val = '') {
+            const wrapper = document.getElementById('admin-dev-images-wrapper');
+            const rowsCount = wrapper.querySelectorAll('.admin-dev-img-row').length;
+            const newIndex = rowsCount + 1;
+
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center admin-dev-img-row animate__animated animate__fadeInUp animate__faster";
+            div.innerHTML = `
+                <input type="text" value="${val}" placeholder="URL Zdjęcia ${newIndex}" class="dev-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                <button type="button" onclick="this.parentElement.remove(); updateAdminDevImageIndices();" class="w-8 h-8 flex items-center justify-center bg-red-950/40 hover:bg-red-800 text-red-400 hover:text-white rounded border border-red-900/50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        window.updateAdminDevImageIndices = function() {
+            const wrapper = document.getElementById('admin-dev-images-wrapper');
+            const inputs = wrapper.querySelectorAll('.dev-img-input');
+            inputs.forEach((input, index) => {
+                input.placeholder = `URL Zdjęcia ${index + 1}` + (index === 0 ? ' (Główne)' : '');
+                if (index === 0) {
+                    const row = input.parentElement;
+                    if(!row.querySelector('div')) {
+                        const btn = row.querySelector('button');
+                        if (btn) btn.remove();
+                        const counter = document.createElement('div');
+                        counter.className = "w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800";
+                        counter.innerText = "1";
+                        row.appendChild(counter);
+                    }
+                }
+            });
+        }
+
+        window.addAdminArrImageInput = function(val = '') {
+            const wrapper = document.getElementById('admin-arr-images-wrapper');
+            const rowsCount = wrapper.querySelectorAll('.admin-arr-img-row').length;
+            const newIndex = rowsCount + 1;
+
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center admin-arr-img-row animate__animated animate__fadeInUp animate__faster";
+            div.innerHTML = `
+                <input type="text" value="${val}" placeholder="URL Zdjęcia ${newIndex}" class="arr-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                <button type="button" onclick="this.parentElement.remove(); updateAdminArrImageIndices();" class="w-8 h-8 flex items-center justify-center bg-red-950/40 hover:bg-red-800 text-red-400 hover:text-white rounded border border-red-900/50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            `;
+            wrapper.appendChild(div);
+        }
+
+        window.updateAdminArrImageIndices = function() {
+            const wrapper = document.getElementById('admin-arr-images-wrapper');
+            const inputs = wrapper.querySelectorAll('.arr-img-input');
+            inputs.forEach((input, index) => {
+                input.placeholder = `URL Zdjęcia ${index + 1}` + (index === 0 ? ' (Główne)' : '');
+                if (index === 0) {
+                    const row = input.parentElement;
+                    if(!row.querySelector('div')) {
+                        const btn = row.querySelector('button');
+                        if (btn) btn.remove();
+                        const counter = document.createElement('div');
+                        counter.className = "w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800";
+                        counter.innerText = "1";
+                        row.appendChild(counter);
+                    }
+                }
+            });
+        }
+
+        function showView(viewName) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
+            if(viewName === 'main') {
+                document.getElementById('view-main').classList.remove('hidden');
+                window.scrollTo({top: 0, behavior: 'instant'});
+            } else if(viewName === 'all-properties') {
+                document.getElementById('view-all-properties').classList.remove('hidden');
+                window.scrollTo({top: 0, behavior: 'instant'});
+                resetFilters();
+            } else if(viewName === 'arrangements') {
+                document.getElementById('view-arrangements').classList.remove('hidden');
+                window.scrollTo({top: 0, behavior: 'instant'});
+            }
+        }
+
+        window.openModal = function(type, id) {
+            const modal = document.getElementById('detailsModal');
+            currentModalImages = [];
+            currentModalImageIndex = 0;
+            
+            if(type === 'normal') {
+                const item = loadedNormalProperties.find(x => x.id === id);
+                if(!item) return;
+
+                document.getElementById('modalBadge').className = `text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${item.status.toLowerCase() === 'wolny' ? 'bg-emerald-600 text-white' : 'bg-d8gold text-d8dark'}`;
+                document.getElementById('modalBadge').innerText = item.status;
+                document.getElementById('modalTitle').innerText = item.title;
+                document.getElementById('modalPriceTag').innerText = `$${parseInt(item.price).toLocaleString()}`;
+                document.getElementById('modalLocationLabel').innerText = "Lokalizacja / Rejon";
+                document.getElementById('modalLocation').innerText = item.location;
+                
+                document.getElementById('modalSpec1Label').innerText = "Pokoje";
+                document.getElementById('modalSpec1').innerText = item.rooms;
+                document.getElementById('modalSpec2Label').innerText = "Garaż";
+                document.getElementById('modalSpec2').innerText = formatGarageText(item);
+                document.getElementById('modalDesc').innerText = item.desc;
+
+                document.getElementById('modalExtraSpecsGrid').classList.remove('hidden');
+                document.getElementById('modalGarageStatus').innerText = (item.hasGarage !== undefined ? item.hasGarage : !!item.garage) ? 'Tak' : 'Nie';
+                document.getElementById('modalGarageCapacity').innerText = formatGarageCapacityText(item);
+                document.getElementById('modalRent').innerText = formatRentText(item);
+                document.getElementById('modalKeys').innerText = formatKeysText(item);
+                
+                if (item.img) {
+                    currentModalImages = item.img.split(',').map(link => link.trim()).filter(link => link.length > 0);
+                }
+                if (currentModalImages.length === 0) {
+                    currentModalImages.push("https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80");
+                }
+
+                updateModalImage();
+
+                document.getElementById('modalGallerySection').classList.remove('hidden');
+                const thumbsContainer = document.getElementById('modalThumbsContainer');
+                thumbsContainer.innerHTML = '';
+                
+                currentModalImages.forEach((imgUrl, index) => {
+                    thumbsContainer.innerHTML += `
+                        <img src="${imgUrl}" onclick="jumpToModalImage(${index})" class="modal-thumb w-20 h-14 object-cover rounded border ${index === 0 ? 'border-d8gold' : 'border-zinc-800'} hover:border-d8gold cursor-pointer transition-all flex-shrink-0">
+                    `;
+                });
+
+            } else if(type === 'dev') {
+                const item = loadedDevProperties.find(x => x.id === id);
+                if(!item) return;
+
+                document.getElementById('modalBadge').className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-amber-500 text-d8dark";
+                document.getElementById('modalBadge').innerText = "DEWELOPERSKI";
+                document.getElementById('modalTitle').innerText = `Nowy Dom: ${item.district}`;
+                
+                if (item.img) {
+                    currentModalImages = item.img.split(',').map(link => link.trim()).filter(link => link.length > 0);
+                }
+                if (currentModalImages.length === 0) {
+                    currentModalImages.push("https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80");
+                }
+                updateModalImage();
+
+                document.getElementById('modalPriceTag').innerText = `$${parseInt(item.priceMin).toLocaleString()} - $${parseInt(item.priceMax).toLocaleString()}`;
+                document.getElementById('modalLocationLabel').innerText = "Lokalizacja / Rejon";
+                document.getElementById('modalLocation').innerText = item.district;
+                
+                document.getElementById('modalSpec1Label').innerText = "Widełki od";
+                document.getElementById('modalSpec1').innerText = `$${parseInt(item.priceMin).toLocaleString()}`;
+                document.getElementById('modalSpec2Label').innerText = "Widełki do";
+                document.getElementById('modalSpec2').innerText = `$${parseInt(item.priceMax).toLocaleString()}`;
+                document.getElementById('modalDesc').innerText = item.notes || "Brak dodatkowych uwag deweloperskich dla tego rejonu.";
+
+                document.getElementById('modalExtraSpecsGrid').classList.remove('hidden');
+                document.getElementById('modalGarageStatus').innerText = item.hasGarage ? 'Tak' : 'Nie';
+                document.getElementById('modalGarageCapacity').innerText = formatGarageCapacityText(item);
+                document.getElementById('modalRent').innerText = formatRentText(item);
+                document.getElementById('modalKeys').innerText = formatKeysText(item);
+                
+                document.getElementById('modalGallerySection').classList.remove('hidden');
+                const thumbsContainer = document.getElementById('modalThumbsContainer');
+                thumbsContainer.innerHTML = '';
+                currentModalImages.forEach((imgUrl, index) => {
+                    thumbsContainer.innerHTML += `
+                        <img src="${imgUrl}" onclick="jumpToModalImage(${index})" class="modal-thumb w-20 h-14 object-cover rounded border ${index === 0 ? 'border-amber-500' : 'border-zinc-800'} hover:border-amber-500 cursor-pointer transition-all flex-shrink-0">
+                    `;
+                });
+            } else if(type === 'arrangement') {
+                const item = loadedArrangements.find(x => x.id === id);
+                if(!item) return;
+
+                document.getElementById('modalBadge').className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-purple-400 text-d8dark";
+                document.getElementById('modalBadge').innerText = "ZREALIZOWANA ARANŻACJA";
+                document.getElementById('modalTitle').innerText = item.title;
+                document.getElementById('modalPriceTag').innerText = `$${parseInt(item.price).toLocaleString()}`;
+                document.getElementById('modalLocationLabel').innerText = "Wykonawca";
+                document.getElementById('modalLocation').innerText = item.executor || "Zespół Dynasty 8";
+
+                document.getElementById('modalSpec1Label').innerText = "Kategoria";
+                document.getElementById('modalSpec1').innerText = item.category || "Wykończenie wnętrz";
+                document.getElementById('modalSpec2Label').innerText = "Status";
+                document.getElementById('modalSpec2').innerText = "Zrealizowano";
+                document.getElementById('modalDesc').innerText = item.desc || "Brak dodatkowego opisu realizacji.";
+                document.getElementById('modalExtraSpecsGrid').classList.add('hidden');
+
+                if (item.img) {
+                    currentModalImages = item.img.split(',').map(link => link.trim()).filter(link => link.length > 0);
+                }
+                if (currentModalImages.length === 0) {
+                    currentModalImages.push("https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80");
+                }
+                updateModalImage();
+
+                document.getElementById('modalGallerySection').classList.remove('hidden');
+                const thumbsContainer = document.getElementById('modalThumbsContainer');
+                thumbsContainer.innerHTML = '';
+                currentModalImages.forEach((imgUrl, index) => {
+                    thumbsContainer.innerHTML += `
+                        <img src="${imgUrl}" onclick="jumpToModalImage(${index})" class="modal-thumb w-20 h-14 object-cover rounded border ${index === 0 ? 'border-purple-400' : 'border-zinc-800'} hover:border-purple-400 cursor-pointer transition-all flex-shrink-0">
+                    `;
+                });
+            }
+
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function updateModalImage() {
+            document.getElementById('modalImg').src = currentModalImages[currentModalImageIndex];
+            document.getElementById('modalImageCounter').innerText = `${currentModalImageIndex + 1} / ${currentModalImages.length}`;
+            
+            if(currentModalImages.length <= 1) {
+                document.getElementById('modalPrevBtn').classList.add('hidden');
+                document.getElementById('modalNextBtn').classList.add('hidden');
+                document.getElementById('modalImageCounter').classList.add('hidden');
+            } else {
+                document.getElementById('modalPrevBtn').classList.remove('hidden');
+                document.getElementById('modalNextBtn').classList.remove('hidden');
+                document.getElementById('modalImageCounter').classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.modal-thumb').forEach((thumb, idx) => {
+                if(idx === currentModalImageIndex) {
+                    thumb.classList.remove('border-zinc-800');
+                    thumb.classList.add('border-d8gold', 'border-amber-500', 'border-purple-400');
+                } else {
+                    thumb.classList.remove('border-d8gold', 'border-amber-500', 'border-purple-400');
+                    thumb.classList.add('border-zinc-800');
+                }
+            });
+        }
+
+        window.changeModalImage = function(direction) {
+            currentModalImageIndex += direction;
+            if (currentModalImageIndex >= currentModalImages.length) currentModalImageIndex = 0;
+            if (currentModalImageIndex < 0) currentModalImageIndex = currentModalImages.length - 1;
+            updateModalImage();
+        }
+
+        window.jumpToModalImage = function(index) {
+            currentModalImageIndex = index;
+            updateModalImage();
+        }
+
+        window.closeModal = function() {
+            document.getElementById('detailsModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        window.renderAllCards = function(properties) {
+            loadedNormalProperties = properties;
+            const carousel = document.getElementById('propertiesCarousel');
+            if(carousel) {
+                carousel.innerHTML = '';
+                properties.forEach(p => {
+                    const badgeColor = p.status.toLowerCase() === 'wolny' ? 'bg-emerald-600 text-white' : (p.status.toLowerCase() === 'premium' ? 'bg-d8gold text-d8dark' : 'bg-zinc-700 text-white');
+                    const firstImg = p.img ? p.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80";
+                    carousel.innerHTML += `
+                        <div onclick="window.openModal('normal', '${p.id}')" class="property-card cursor-pointer bg-d8card rounded-xl overflow-hidden border border-zinc-800 group hover:border-d8gold/50 hover:shadow-[0_10px_30px_rgba(212,175,55,0.1)] transition-all duration-500 min-w-full sm:min-w-[calc(50%-12px)] md:min-w-[calc(33.333%-16px)] snap-start flex-shrink-0"
+                             data-location="${p.location}" data-type="${p.type}" data-price="${p.price}">
+                            <div class="relative overflow-hidden h-64">
+                                <img src="${firstImg}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <span class="absolute top-4 left-4 ${badgeColor} text-xs font-bold px-2.5 py-1 rounded">${p.status}</span>
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300 backdrop-blur-[2px]">
+                                    <span class="bg-d8gold text-d8dark font-bold text-xs uppercase tracking-widest px-4 py-2 rounded shadow-lg">Zobacz Szczegóły & Galerię</span>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2 gap-2">
+                                    <h3 class="font-display font-bold text-lg group-hover:text-d8gold transition-colors duration-300 line-clamp-1">${p.title}</h3>
+                                    <span class="text-d8gold font-bold text-base whitespace-nowrap">$${parseInt(p.price).toLocaleString()}</span>
+                                </div>
+                                <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${p.desc}</p>
+                                <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                    <span>🛏️ ${p.rooms}</span>
+                                    <span>🚗 ${formatGarageText(p)}</span>
+                                    <span>📍 ${p.location}</span>
+                                </div>
+                                <div class="pt-2 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                    <span>💵 ${formatRentText(p)}</span>
+                                    <span>🔑 Klucze: ${formatKeysText(p)}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+            buildCombinedGrid();
+        }
+
+        window.renderDeveloperCards = function(devProperties) {
+            loadedDevProperties = devProperties;
+            const container = document.getElementById('developerGrid');
+            if(container) {
+                container.innerHTML = '';
+                devProperties.forEach(d => {
+                    const firstImg = d.img ? d.img.split(',')[0].trim() : 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80';
+                    container.innerHTML += `
+                        <div onclick="window.openModal('dev', '${d.id}')" class="developer-card cursor-pointer bg-d8card rounded-xl border border-zinc-800 overflow-hidden group hover:border-amber-500/60 hover:shadow-[0_10px_30px_rgba(245,158,11,0.05)] transition-all duration-300"
+                             data-district="${d.district}" data-price-min="${d.priceMin}">
+                            <div class="h-40 relative overflow-hidden bg-zinc-900">
+                                <img src="${firstImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t filter backdrop-blur-[1px] from-zinc-950 via-zinc-950/40 to-transparent"></div>
+                                <div class="absolute bottom-3 left-4">
+                                    <span class="text-[10px] text-amber-500 font-mono tracking-widest uppercase font-bold">DZIELNICA</span>
+                                    <h3 class="text-xl font-bold tracking-wide text-white">${d.district}</h3>
+                                </div>
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                                    <span class="bg-amber-500 text-d8dark font-bold text-[10px] uppercase tracking-widest px-3 py-1.5 rounded shadow-md">Otwórz Rejon</span>
+                                </div>
+                            </div>
+                            <div class="p-4 space-y-3">
+                                <div>
+                                    <span class="text-[10px] font-semibold text-zinc-500 uppercase block">Ceny inwestycji nowy dom</span>
+                                    <span class="text-lg font-extrabold text-white tracking-tight">od <span class="text-amber-500">$${parseInt(d.priceMin).toLocaleString()}</span> do <span class="text-amber-500">$${parseInt(d.priceMax).toLocaleString()}</span></span>
+                                </div>
+                                <p class="text-zinc-400 text-xs border-t border-zinc-900 pt-2.5 line-clamp-2">${d.notes || 'Brak dodatkowych wytycznych dla rejonu.'}</p>
+                                <div class="flex justify-between text-[10px] text-zinc-500 font-semibold uppercase pt-1">
+                                    <span>🚗 ${formatGarageText(d)}</span>
+                                    <span>💵 ${formatRentText(d)}</span>
+                                    <span>🔑 ${formatKeysText(d)}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+            buildCombinedGrid();
+        };
+
+        function sortArrangementsByNewest(arrangements) {
+            return sortByOrderGeneric(arrangements);
+        }
+
+        // Sortuje wg pola "order" (ustawianego przeciąganiem w panelu admina).
+        // Jeśli element nie ma jeszcze ustawionego "order" (starsze wpisy), używamy createdAt jako fallback,
+        // dzięki czemu nowo dodane elementy i tak trafiają na górę listy.
+        function sortByOrderGeneric(items) {
+            return items.slice().sort((a, b) => {
+                const orderA = (a.order !== undefined && a.order !== null) ? a.order : (a.createdAt || 0);
+                const orderB = (b.order !== undefined && b.order !== null) ? b.order : (b.createdAt || 0);
+                return orderB - orderA;
+            });
+        }
+
+        function sortPropertiesByOrder(properties) {
+            return sortByOrderGeneric(properties);
+        }
+
+        function sortDevPropertiesByOrder(devProperties) {
+            return sortByOrderGeneric(devProperties);
+        }
+
+        // Zwraca czytelny tekst o garażu. Obsługuje nowe pola (hasGarage/garageCapacity)
+        // oraz stare wpisy, które miały tylko wolnotekstowe pole "garage".
+        function formatGarageText(item) {
+            if (item.hasGarage !== undefined && item.hasGarage !== null) {
+                if (item.hasGarage) {
+                    const cap = item.garageCapacity ? `${item.garageCapacity} aut` : 'brak danych o pojemności';
+                    return `Tak (${cap})`;
+                }
+                return 'Brak garażu';
+            }
+            return item.garage || 'Brak danych';
+        }
+
+        function formatGarageCapacityText(item) {
+            if (!item.hasGarage) return '—';
+            return (item.garageCapacity !== undefined && item.garageCapacity !== null && item.garageCapacity !== '')
+                ? `${item.garageCapacity} aut`
+                : 'Brak danych';
+        }
+
+        function formatRentText(item) {
+            return (item.rent !== undefined && item.rent !== null && item.rent !== '' && item.rent > 0)
+                ? `$${parseInt(item.rent).toLocaleString()} / tydz.`
+                : 'Brak czynszu';
+        }
+
+        function formatKeysText(item) {
+            return (item.keysAvailable !== undefined && item.keysAvailable !== null && item.keysAvailable !== '')
+                ? `${item.keysAvailable} szt.`
+                : 'Brak danych';
+        }
+
+        let draggedItem = null; // { kind: 'normal'|'dev'|'arr', id }
+
+        function handleItemDragStart(e, kind, id) {
+            draggedItem = { kind, id };
+            e.currentTarget.classList.add('opacity-30');
+            e.dataTransfer.effectAllowed = 'move';
+            try { e.dataTransfer.setData('text/plain', id); } catch(err) {}
+        }
+
+        function handleItemDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('border-d8gold');
+        }
+
+        function handleItemDragLeave(e) {
+            e.currentTarget.classList.remove('border-d8gold');
+        }
+
+        function handleItemDrop(e, kind, targetId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('border-d8gold');
+            if (!draggedItem || draggedItem.kind !== kind || draggedItem.id === targetId) { draggedItem = null; return; }
+            if (typeof window.reorderItems === 'function') {
+                window.reorderItems(kind, draggedItem.id, targetId);
+            }
+            draggedItem = null;
+        }
+
+        function handleItemDragEnd(e) {
+            e.currentTarget.classList.remove('opacity-30');
+            draggedItem = null;
+        }
+
+        window.renderArrangements = function(arrangements) {
+            loadedArrangements = arrangements;
+            const sorted = sortArrangementsByNewest(arrangements);
+
+            // Podgląd 3 ostatnio zrealizowanych aranżacji na stronie głównej
+            const latestContainer = document.getElementById('interiorsLatestGrid');
+            if (latestContainer) {
+                latestContainer.innerHTML = '';
+                const latest = sorted.slice(0, 3);
+                if (latest.length === 0) {
+                    latestContainer.innerHTML = `<p class="text-zinc-500 text-xs sm:col-span-3 text-center py-6">Brak jeszcze dodanych realizacji.</p>`;
+                } else {
+                    latest.forEach(a => {
+                        const firstImg = a.img ? a.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80";
+                        latestContainer.innerHTML += `
+                            <div onclick="window.openModal('arrangement', '${a.id}')" class="cursor-pointer bg-zinc-950/60 rounded-lg overflow-hidden border border-zinc-800 group hover:border-purple-400/60 transition-all duration-300">
+                                <div class="h-36 overflow-hidden relative">
+                                    <img src="${firstImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent"></div>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-display font-bold text-sm text-white line-clamp-1">${a.title}</h4>
+                                    <div class="flex justify-between items-center mt-1.5 text-[11px] text-zinc-400">
+                                        <span class="line-clamp-1">👤 ${a.executor || 'Zespół Dynasty 8'}</span>
+                                        <span class="text-purple-400 font-bold whitespace-nowrap ml-2">$${parseInt(a.price).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                }
+            }
+
+            // Pełna siatka na podstronie "Wykonane Aranżacje"
+            const fullContainer = document.getElementById('arrangementsGrid');
+            if (fullContainer) {
+                fullContainer.innerHTML = '';
+                sorted.forEach(a => {
+                    const firstImg = a.img ? a.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80";
+                    fullContainer.innerHTML += `
+                        <div onclick="window.openModal('arrangement', '${a.id}')" class="cursor-pointer bg-d8card rounded-xl overflow-hidden border border-zinc-800 group hover:border-purple-400/50 hover:shadow-[0_10px_30px_rgba(192,132,252,0.1)] transition-all duration-500">
+                            <div class="relative overflow-hidden h-56">
+                                <img src="${firstImg}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <span class="absolute top-4 left-4 bg-purple-400 text-d8dark text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow-md">${a.category || 'Aranżacja'}</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-2 gap-2">
+                                    <h3 class="font-display font-bold text-lg group-hover:text-purple-400 transition-colors duration-300 line-clamp-1">${a.title}</h3>
+                                    <span class="text-purple-400 font-bold text-base whitespace-nowrap">$${parseInt(a.price).toLocaleString()}</span>
+                                </div>
+                                <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${a.desc || 'Brak dodatkowego opisu realizacji.'}</p>
+                                <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                    <span>👤 ${a.executor || 'Zespół Dynasty 8'}</span>
+                                    <span>✔ Zrealizowano</span>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('noArrangements').style.display = arrangements.length === 0 ? 'block' : 'none';
+            }
+        };
+
+        function buildCombinedGrid() {
+            const fullGrid = document.getElementById('allPropertiesGrid');
+            if(!fullGrid) return;
+            fullGrid.innerHTML = '';
+
+            loadedNormalProperties.forEach(p => {
+                const badgeColor = p.status.toLowerCase() === 'wolny' ? 'bg-emerald-600 text-white' : (p.status.toLowerCase() === 'premium' ? 'bg-d8gold text-d8dark' : 'bg-zinc-700 text-white');
+                const firstImg = p.img ? p.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80";
+                fullGrid.innerHTML += `
+                    <div onclick="window.openModal('normal', '${p.id}')" class="all-grid-card cursor-pointer bg-d8card rounded-xl overflow-hidden border border-zinc-800 group hover:border-d8gold/50 hover:shadow-[0_10px_30px_rgba(212,175,55,0.1)] transition-all duration-500"
+                         data-location="${p.location}" data-type="${p.type}" data-price="${p.price}">
+                        <div class="relative overflow-hidden h-64">
+                            <img src="${firstImg}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <span class="absolute top-4 left-4 ${badgeColor} text-xs font-bold px-2.5 py-1 rounded">${p.status}</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2 gap-2">
+                                <h3 class="font-display font-bold text-lg group-hover:text-d8gold transition-colors duration-300 line-clamp-1">${p.title}</h3>
+                                <span class="text-d8gold font-bold text-base whitespace-nowrap">$${parseInt(p.price).toLocaleString()}</span>
+                            </div>
+                            <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${p.desc}</p>
+                            <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                <span>🛏️ ${p.rooms}</span>
+                                <span>🚗 ${formatGarageText(p)}</span>
+                                <span>📍 ${p.location}</span>
+                            </div>
+                            <div class="pt-2 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                <span>💵 ${formatRentText(p)}</span>
+                                <span>🔑 Klucze: ${formatKeysText(p)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            loadedDevProperties.forEach(d => {
+                const firstImg = d.img ? d.img.split(',')[0].trim() : 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80';
+                fullGrid.innerHTML += `
+                    <div onclick="window.openModal('dev', '${d.id}')" class="all-grid-card cursor-pointer bg-d8card rounded-xl overflow-hidden border border-zinc-800 group hover:border-amber-500/50 hover:shadow-[0_10px_30px_rgba(245,158,11,0.05)] transition-all duration-500"
+                         data-location="${d.district}" data-type="deweloperski" data-price="${d.priceMin}">
+                        <div class="relative overflow-hidden h-64 bg-zinc-900">
+                            <img src="${firstImg}" alt="${d.district}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <span class="absolute top-4 left-4 bg-amber-500 text-d8dark text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow-md">Nowy Dom</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2 gap-2">
+                                <h3 class="font-display font-bold text-lg group-hover:text-amber-500 transition-colors duration-300 line-clamp-1">Projekt: ${d.district}</h3>
+                                <span class="text-amber-500 font-bold text-base whitespace-nowrap">od $${parseInt(d.priceMin).toLocaleString()}</span>
+                            </div>
+                            <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${d.notes || 'Stan deweloperski, pełna swoboda aranżacji wnętrza przez klienta.'}</p>
+                            <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                <span class="text-amber-500">🔨 NOWA BUDOWA</span>
+                                <span>Max: $${parseInt(d.priceMax).toLocaleString()}</span>
+                                <span>📍 ${d.district}</span>
+                            </div>
+                            <div class="pt-2 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
+                                <span>🚗 ${formatGarageText(d)}</span>
+                                <span>💵 ${formatRentText(d)}</span>
+                                <span>🔑 ${formatKeysText(d)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function applyMainFilters() {
+            const selectedLoc = document.getElementById('mainSearchLocation').value;
+            const selectedType = document.getElementById('mainSearchType').value;
+            const selectedPrice = document.getElementById('mainSearchPrice').value;
+            document.getElementById('searchLocation').value = selectedLoc;
+            if(selectedType === 'willa') {
+                document.getElementById('searchType').value = 'willa';
+            } else {
+                document.getElementById('searchType').value = selectedType;
+            }
+            document.getElementById('searchPrice').value = selectedPrice;
+            showView('all-properties');
+            filterProperties();
+        }
+
+        function filterProperties() {
+            const selectedLocation = document.getElementById('searchLocation').value;
+            const selectedType = document.getElementById('searchType').value;
+            const selectedPrice = document.getElementById('searchPrice').value;
+            const cards = document.querySelectorAll('#allPropertiesGrid .all-grid-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardLocation = card.getAttribute('data-location');
+                const cardType = card.getAttribute('data-type');
+                const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
+                const matchLocation = (selectedLocation === 'all' || cardLocation.toLowerCase().includes(selectedLocation.toLowerCase()));
+                
+                let matchType = false;
+                if (selectedType === 'all') {
+                    matchType = true;
+                } else if (selectedType === 'willa') {
+                    matchType = (cardType === 'willa' || cardType === 'deweloperski');
+                } else {
+                    matchType = (cardType === selectedType);
+                }
+
+                const matchPrice = (selectedPrice === 'all' || cardPrice <= parseInt(selectedPrice));
+
+                if (matchLocation && matchType && matchPrice) { 
+                    card.style.display = 'block'; 
+                    visibleCount++; 
+                } else { 
+                    card.style.display = 'none'; 
+                }
+            });
+            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        function resetFilters() {
+            document.getElementById('searchLocation').value = 'all';
+            document.getElementById('searchType').value = 'all';
+            document.getElementById('searchPrice').value = 'all';
+            document.getElementById('mainSearchLocation').value = 'all';
+            document.getElementById('mainSearchType').value = 'all';
+            document.getElementById('mainSearchPrice').value = 'all';
+            document.querySelectorAll('#allPropertiesGrid .all-grid-card').forEach(card => card.style.display = 'block');
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        window.renderAdminList = function(properties) {
+            const container = document.getElementById('admin-list-container');
+            if(!container) return;
+            container.innerHTML = `
+                <p class="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span>☰</span> Przeciągnij ofertę, aby zmienić kolejność — na górze wyświetlają się najnowsze
+                </p>`;
+            const sorted = sortPropertiesByOrder(properties);
+            sorted.forEach(p => {
+                const firstImg = p.img ? p.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80";
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-zinc-900 p-3 rounded border border-zinc-800 border-2 text-xs cursor-move transition-colors"
+                         draggable="true"
+                         data-prop-id="${p.id}"
+                         ondragstart="handleItemDragStart(event, 'normal', '${p.id}')"
+                         ondragover="handleItemDragOver(event)"
+                         ondragleave="handleItemDragLeave(event)"
+                         ondrop="handleItemDrop(event, 'normal', '${p.id}')"
+                         ondragend="handleItemDragEnd(event)">
+                        <div class="flex items-center gap-3">
+                            <span class="text-zinc-600 text-base select-none px-1">☰</span>
+                            <img src="${firstImg}" class="w-10 h-10 object-cover rounded">
+                            <div>
+                                <h4 class="font-bold text-white">${p.title}</h4>
+                                <p class="text-zinc-500">$${parseInt(p.price).toLocaleString()} | ${p.location}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.editProperty('${p.id}')" class="bg-blue-600/30 text-blue-400 px-2 py-1 rounded hover:bg-blue-600 hover:text-white transition-all">Edytuj</button>
+                            <button onclick="window.deleteProperty('${p.id}')" class="bg-red-600/30 text-red-400 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-all">Usuń</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.renderAdminDevList = function(devProperties) {
+            const container = document.getElementById('admin-dev-list-container');
+            if(!container) return;
+            container.innerHTML = `
+                <p class="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span>☰</span> Przeciągnij pakiet, aby zmienić kolejność — na górze wyświetlają się najnowsze
+                </p>`;
+            const sorted = sortDevPropertiesByOrder(devProperties);
+            sorted.forEach(d => {
+                const firstImg = d.img ? d.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80";
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-zinc-900 p-3 rounded border border-zinc-800 border-2 text-xs cursor-move transition-colors"
+                         draggable="true"
+                         data-prop-id="${d.id}"
+                         ondragstart="handleItemDragStart(event, 'dev', '${d.id}')"
+                         ondragover="handleItemDragOver(event)"
+                         ondragleave="handleItemDragLeave(event)"
+                         ondrop="handleItemDrop(event, 'dev', '${d.id}')"
+                         ondragend="handleItemDragEnd(event)">
+                        <div class="flex items-center gap-3">
+                            <span class="text-zinc-600 text-base select-none px-1">☰</span>
+                            <img src="${firstImg}" class="w-10 h-10 object-cover rounded">
+                            <div>
+                                <h4 class="font-bold text-white">Nowy Dom: ${d.district}</h4>
+                                <p class="text-zinc-500">Przedział: $${parseInt(d.priceMin).toLocaleString()} - $${parseInt(d.priceMax).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.editDevProperty('${d.id}')" class="bg-blue-600/30 text-blue-400 px-2 py-1 rounded hover:bg-blue-600 hover:text-white transition-all">Edytuj</button>
+                            <button onclick="window.deleteDevProperty('${d.id}')" class="bg-red-600/30 text-red-400 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-all">Usuń</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.renderAdminArrList = function(arrangements) {
+            const container = document.getElementById('admin-arr-list-container');
+            if(!container) return;
+            container.innerHTML = `
+                <p class="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                    <span>☰</span> Przeciągnij realizację, aby zmienić kolejność — na górze wyświetlają się najnowsze
+                </p>`;
+            sortArrangementsByNewest(arrangements).forEach(a => {
+                const firstImg = a.img ? a.img.split(',')[0].trim() : "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80";
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-zinc-900 p-3 rounded border border-zinc-800 border-2 text-xs cursor-move transition-colors"
+                         draggable="true"
+                         data-prop-id="${a.id}"
+                         ondragstart="handleItemDragStart(event, 'arr', '${a.id}')"
+                         ondragover="handleItemDragOver(event)"
+                         ondragleave="handleItemDragLeave(event)"
+                         ondrop="handleItemDrop(event, 'arr', '${a.id}')"
+                         ondragend="handleItemDragEnd(event)">
+                        <div class="flex items-center gap-3">
+                            <span class="text-zinc-600 text-base select-none px-1">☰</span>
+                            <img src="${firstImg}" class="w-10 h-10 object-cover rounded">
+                            <div>
+                                <h4 class="font-bold text-white">${a.title}</h4>
+                                <p class="text-zinc-500">$${parseInt(a.price).toLocaleString()} | ${a.executor || 'Zespół Dynasty 8'}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.editArrangement('${a.id}')" class="bg-blue-600/30 text-blue-400 px-2 py-1 rounded hover:bg-blue-600 hover:text-white transition-all">Edytuj</button>
+                            <button onclick="window.deleteArrangement('${a.id}')" class="bg-red-600/30 text-red-400 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-all">Usuń</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        function switchAdminTab(tab) {
+            const btnNormal = document.getElementById('tabBtnNormal');
+            const btnDev = document.getElementById('tabBtnDev');
+            const btnArr = document.getElementById('tabBtnArr');
+            const boxNormal = document.getElementById('adminTabNormal');
+            const boxDev = document.getElementById('adminTabDev');
+            const boxArr = document.getElementById('adminTabArr');
+
+            const inactive = "text-zinc-400 font-medium px-4 py-2 hover:text-white transition-all";
+            btnNormal.className = inactive;
+            btnDev.className = inactive;
+            btnArr.className = inactive;
+            boxNormal.classList.add('hidden');
+            boxDev.classList.add('hidden');
+            boxArr.classList.add('hidden');
+
+            if(tab === 'normal') {
+                btnNormal.className = "border-b-2 border-d8gold text-d8gold font-bold px-4 py-2 transition-all";
+                boxNormal.classList.remove('hidden');
+            } else if(tab === 'dev') {
+                btnDev.className = "border-b-2 border-amber-500 text-amber-500 font-bold px-4 py-2 transition-all";
+                boxDev.classList.remove('hidden');
+            } else if(tab === 'arr') {
+                btnArr.className = "border-b-2 border-purple-400 text-purple-400 font-bold px-4 py-2 transition-all";
+                boxArr.classList.remove('hidden');
+            }
+        }
+
+        function slideCarousel(direction) {
+            const carousel = document.getElementById('propertiesCarousel');
+            const firstCard = carousel.querySelector('.property-card');
+            if(!firstCard) return;
+            const cardWidth = firstCard.offsetWidth + 24;
+            if (direction === 'left') { carousel.scrollLeft -= cardWidth; } 
+            else { carousel.scrollLeft += cardWidth; }
+        }
+
+        function calculateLoan() {
+            const price = parseInt(document.getElementById('inputPrice').value);
+            const term = parseInt(document.getElementById('inputTerm').value);
+            document.getElementById('valPrice').innerText = '$' + price.toLocaleString();
+            const downPayment = (price * 0.40) + 5000;
+            const loanAmount = price - downPayment;
+            let weeklyPayment = 0;
+            if (loanAmount > 0) { weeklyPayment = loanAmount / term; }
+            document.getElementById('downPaymentAmount').innerText = '$' + Math.round(downPayment).toLocaleString();
+            document.getElementById('loanAmount').innerText = '$' + (loanAmount > 0 ? Math.round(loanAmount).toLocaleString() : '0');
+            document.getElementById('weeklyPayment').innerText = '$' + Math.round(weeklyPayment).toLocaleString();
+        }
+
+        function handleAdminLogin() {
+            if (document.getElementById('admin-user').value === 'admin' && document.getElementById('admin-pass').value === 'admin123') {
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-panel-box').classList.remove('hidden');
+                document.getElementById('login-error').classList.add('hidden');
+                if(typeof window.getLiveProperties === 'function') window.renderAdminList(window.getLiveProperties());
+                if(typeof window.getLiveDevProperties === 'function') window.renderAdminDevList(window.getLiveDevProperties());
+                if(typeof window.getLiveArrangements === 'function') window.renderAdminArrList(window.getLiveArrangements());
+            } else { document.getElementById('login-error').classList.remove('hidden'); }
+        }
+
+        function handleAdminLogout() {
+            document.getElementById('admin-login-box').classList.remove('hidden');
+            document.getElementById('admin-panel-box').classList.add('hidden');
+            window.clearForm();
+            window.clearDevForm();
+            window.clearArrForm();
+        }
+
+        window.clearForm = function() {
+            document.getElementById('prop-id').value = '';
+            document.getElementById('prop-title').value = '';
+            document.getElementById('prop-price').value = '';
+            document.getElementById('prop-status').value = '';
+            document.getElementById('prop-desc').value = '';
+            document.getElementById('prop-rooms').value = '';
+            document.getElementById('prop-has-garage').value = 'tak';
+            document.getElementById('prop-garage-capacity').value = '';
+            document.getElementById('prop-rent').value = '';
+            document.getElementById('prop-keys').value = '';
+            document.getElementById('form-title').innerText = "Dodaj Nową Nieruchomość";
+            
+            const wrapper = document.getElementById('admin-images-wrapper');
+            wrapper.innerHTML = `
+                <div class="flex gap-2 items-center admin-img-row">
+                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="prop-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                </div>
+            `;
+        }
+
+        window.clearDevForm = function() {
+            document.getElementById('dev-id').value = '';
+            document.getElementById('dev-district').value = '';
+            document.getElementById('dev-price-min').value = '';
+            document.getElementById('dev-price-max').value = '';
+            document.getElementById('dev-has-garage').value = 'tak';
+            document.getElementById('dev-garage-capacity').value = '';
+            document.getElementById('dev-rent').value = '';
+            document.getElementById('dev-keys').value = '';
+            document.getElementById('dev-notes').value = '';
+            document.getElementById('dev-form-title').innerText = "Dodaj Pakiet Deweloperski";
+
+            const wrapper = document.getElementById('admin-dev-images-wrapper');
+            wrapper.innerHTML = `
+                <div class="flex gap-2 items-center admin-dev-img-row">
+                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="dev-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                </div>
+            `;
+        }
+
+        window.clearArrForm = function() {
+            document.getElementById('arr-id').value = '';
+            document.getElementById('arr-title').value = '';
+            document.getElementById('arr-executor').value = '';
+            document.getElementById('arr-price').value = '';
+            document.getElementById('arr-category').value = '';
+            document.getElementById('arr-desc').value = '';
+            document.getElementById('arr-form-title').innerText = "Dodaj Aranżację";
+
+            const wrapper = document.getElementById('admin-arr-images-wrapper');
+            wrapper.innerHTML = `
+                <div class="flex gap-2 items-center admin-arr-img-row">
+                    <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="arr-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                </div>
+            `;
+        }
+
+        calculateLoan();
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPyV3qm5ZbaUAiKKHjKWXWJJ9JTIB_scw",
+            authDomain: "dynasty8-ef4cc.firebaseapp.com",
+            databaseURL: "https://dynasty8-ef4cc-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "dynasty8-ef4cc",
+            storageBucket: "dynasty8-ef4cc.firebasestorage.app",
+            messagingSenderId: "60680079178",
+            appId: "1:60680079178:web:56a6f073115529c0fae3b3",
+            measurementId: "G-5R7YB7NY7X"
+        };
+
+        if (firebaseConfig.apiKey === "TWÓJ_API_KEY") {
+            console.error("Firebase nie zostało skonfigurowane!");
+        } else {
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const dbRef = ref(db, 'properties');
+            const devRef = ref(db, 'developer_properties');
+            const arrRef = ref(db, 'arrangements');
+
+            const defaultProperties = {
+                "init1": { 
+                    title: "Eclipse Towers, Apt 31", location: "Rockford Hills", type: "apartament", price: 1200000, status: "Wolny", 
+                    desc: "Luksusowy penthouse z widokiem na panoramę miasta.", rooms: "3 Pokoje",
+                    hasGarage: true, garageCapacity: 10, rent: 4500, keysAvailable: 2,
+                    img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80",
+                    createdAt: 1700000000000, order: 1700000000000
+                },
+                "init2": { 
+                    title: "Willa Vinewood Hills", location: "Vinewood", type: "willa", price: 4500000, status: "PREMIUM", 
+                    desc: "Ogromna posiadłość z basenem typu infinity.", rooms: "5 Pokoi",
+                    hasGarage: true, garageCapacity: 20, rent: 12000, keysAvailable: 1,
+                    img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
+                    createdAt: 1700000001000, order: 1700000001000
+                }
+            };
+
+            const defaultDevProperties = {
+                "dev1": { district: "Del Perro", priceMin: 150000, priceMax: 250000, hasGarage: false, garageCapacity: 0, rent: 0, keysAvailable: 5, img: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80", notes: "Nowoczesne apartamentowce tuż przy plaży.", createdAt: 1700000000000, order: 1700000000000 },
+                "dev2": { district: "Vinewood Hills", priceMin: 1000000, priceMax: 1200000, hasGarage: true, garageCapacity: 15, rent: 0, keysAvailable: 3, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80", notes: "Stan deweloperski, nowoczesna architektura.", createdAt: 1700000001000, order: 1700000001000 }
+            };
+
+            const defaultArrangements = {
+                "arr1": {
+                    title: "Penthouse Rockford Hills", executor: "Michael De Santa", price: 95000, category: "Pakiet Luksusowy",
+                    desc: "Kompleksowa metamorfoza penthouse'u z meblami premium i oświetleniem LED.",
+                    img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+                    createdAt: 1700000000000, order: 1700000000000
+                },
+                "arr2": {
+                    title: "Willa Vinewood Hills", executor: "Franklin Clinton", price: 180000, category: "Projekt Pod Klucz",
+                    desc: "Pełna aranżacja rezydencji wraz z systemem Smart Home i meblami na zamówienie.",
+                    img: "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=800&q=80",
+                    createdAt: 1700000001000, order: 1700000001000
+                },
+                "arr3": {
+                    title: "Apartament Del Perro", executor: "Lamar Davis", price: 45000, category: "Pakiet Podstawowy",
+                    desc: "Odświeżenie wnętrza, nowa kolorystyka ścian i dobór oświetlenia.",
+                    img: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
+                    createdAt: 1700000002000, order: 1700000002000
+                }
+            };
+
+            let currentProperties = [];
+            let currentDevProperties = [];
+            let currentArrangements = [];
+
+            onValue(dbRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) { set(dbRef, defaultProperties); return; }
+                currentProperties = sortPropertiesByOrder(Object.keys(data).map(key => ({ id: key, ...data[key] })));
+                if (typeof window.renderAllCards === 'function') window.renderAllCards(currentProperties);
+                if (typeof window.renderAdminList === 'function') window.renderAdminList(currentProperties);
+            });
+
+            onValue(devRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) { set(devRef, defaultDevProperties); return; }
+                currentDevProperties = sortDevPropertiesByOrder(Object.keys(data).map(key => ({ id: key, ...data[key] })));
+                if (typeof window.renderDeveloperCards === 'function') window.renderDeveloperCards(currentDevProperties);
+                if (typeof window.renderAdminDevList === 'function') window.renderAdminDevList(currentDevProperties);
+            });
+
+            onValue(arrRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) { set(arrRef, defaultArrangements); return; }
+                currentArrangements = sortArrangementsByNewest(Object.keys(data).map(key => ({ id: key, ...data[key] })));
+                if (typeof window.renderArrangements === 'function') window.renderArrangements(currentArrangements);
+                if (typeof window.renderAdminArrList === 'function') window.renderAdminArrList(currentArrangements);
+            });
+
+            window.saveProperty = function() {
+                const id = document.getElementById('prop-id').value;
+                const title = document.getElementById('prop-title').value;
+                const price = parseInt(document.getElementById('prop-price').value) || 0;
+                if (!title || !price) return alert('Wpisz chociaż tytuł i cenę!');
+
+                const inputElements = document.querySelectorAll('.prop-img-input');
+                const linksArray = [];
+                inputElements.forEach(el => {
+                    const val = el.value.trim();
+                    if(val.length > 0) linksArray.push(val);
+                });
+
+                const finalImgString = linksArray.length > 0 ? linksArray.join(', ') : "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80";
+
+                const payload = {
+                    title,
+                    location: document.getElementById('prop-location').value,
+                    type: document.getElementById('prop-type').value,
+                    price,
+                    status: document.getElementById('prop-status').value || "Wolny",
+                    rooms: document.getElementById('prop-rooms').value || "3 Pokoje",
+                    hasGarage: document.getElementById('prop-has-garage').value === 'tak',
+                    garageCapacity: parseInt(document.getElementById('prop-garage-capacity').value) || 0,
+                    rent: parseInt(document.getElementById('prop-rent').value) || 0,
+                    keysAvailable: parseInt(document.getElementById('prop-keys').value) || 0,
+                    img: finalImgString,
+                    desc: document.getElementById('prop-desc').value || "Brak opisu."
+                };
+
+                if (id) {
+                    update(ref(db, `properties/${id}`), payload).then(() => { alert('Zaktualizowano ofertę!'); window.clearForm(); });
+                } else {
+                    const now = Date.now();
+                    payload.createdAt = now;
+                    payload.order = now;
+                    push(dbRef, payload).then(() => { alert('Dodano do bazy chmurowej!'); window.clearForm(); });
+                }
+            };
+
+            window.deleteProperty = function(id) {
+                if (confirm('Usunąć tę nieruchomość na stałe?')) {
+                    remove(ref(db, `properties/${id}`)).then(() => window.clearForm());
+                }
+            };
+
+            window.editProperty = function(id) {
+                const p = currentProperties.find(x => x.id === id);
+                if (!p) return;
+                document.getElementById('prop-id').value = p.id;
+                document.getElementById('prop-title').value = p.title;
+                document.getElementById('prop-location').value = p.location;
+                document.getElementById('prop-type').value = p.type;
+                document.getElementById('prop-price').value = p.price;
+                document.getElementById('prop-status').value = p.status;
+                document.getElementById('prop-rooms').value = p.rooms;
+                document.getElementById('prop-has-garage').value = (p.hasGarage !== undefined ? p.hasGarage : true) ? 'tak' : 'nie';
+                document.getElementById('prop-garage-capacity').value = p.garageCapacity || '';
+                document.getElementById('prop-rent').value = p.rent || '';
+                document.getElementById('prop-keys').value = (p.keysAvailable !== undefined && p.keysAvailable !== null) ? p.keysAvailable : '';
+                document.getElementById('prop-desc').value = p.desc;
+                document.getElementById('form-title').innerText = "Edycja: " + p.title;
+
+                const wrapper = document.getElementById('admin-images-wrapper');
+                wrapper.innerHTML = '';
+
+                if (p.img) {
+                    const imgLinks = p.img.split(',').map(l => l.trim()).filter(l => l.length > 0);
+                    imgLinks.forEach((link, index) => {
+                        if (index === 0) {
+                            wrapper.innerHTML += `
+                                <div class="flex gap-2 items-center admin-img-row">
+                                    <input type="text" value="${link}" placeholder="URL Zdjęcia 1 (Główne)" class="prop-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            `;
+                        } else {
+                            window.addAdminImageInput(link);
+                        }
+                    });
+                } else {
+                    wrapper.innerHTML = `
+                        <div class="flex gap-2 items-center admin-img-row">
+                            <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="prop-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                        </div>
+                    `;
+                }
+                window.updateAdminImageIndices();
+            };
+
+            window.saveDevProperty = function() {
+                const id = document.getElementById('dev-id').value;
+                const district = document.getElementById('dev-district').value;
+                const priceMin = parseInt(document.getElementById('dev-price-min').value) || 0;
+                const priceMax = parseInt(document.getElementById('dev-price-max').value) || 0;
+                if (!district || !priceMin || !priceMax) return alert('Wypełnij nazwę dzielnicy oraz ceny numerycznie!');
+
+                const inputElements = document.querySelectorAll('.dev-img-input');
+                const linksArray = [];
+                inputElements.forEach(el => {
+                    const val = el.value.trim();
+                    if(val.length > 0) linksArray.push(val);
+                });
+
+                const finalImgString = linksArray.length > 0 ? linksArray.join(', ') : "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80";
+
+                const payload = {
+                    district,
+                    priceMin,
+                    priceMax,
+                    hasGarage: document.getElementById('dev-has-garage').value === 'tak',
+                    garageCapacity: parseInt(document.getElementById('dev-garage-capacity').value) || 0,
+                    rent: parseInt(document.getElementById('dev-rent').value) || 0,
+                    keysAvailable: parseInt(document.getElementById('dev-keys').value) || 0,
+                    img: finalImgString,
+                    notes: document.getElementById('dev-notes').value || ""
+                };
+
+                if (id) {
+                    update(ref(db, `developer_properties/${id}`), payload).then(() => { alert('Zaktualizowano pakiet deweloperski!'); window.clearDevForm(); });
+                } else {
+                    const now = Date.now();
+                    payload.createdAt = now;
+                    payload.order = now;
+                    push(devRef, payload).then(() => { alert('Dodano pakiet deweloperski do bazy!'); window.clearDevForm(); });
+                }
+            };
+
+            window.deleteDevProperty = function(id) {
+                if (confirm('Usunąć ten pakiet deweloperski?')) {
+                    remove(ref(db, `developer_properties/${id}`)).then(() => window.clearDevForm());
+                }
+            };
+
+            window.editDevProperty = function(id) {
+                const d = currentDevProperties.find(x => x.id === id);
+                if (!d) return;
+                document.getElementById('dev-id').value = d.id;
+                document.getElementById('dev-district').value = d.district;
+                document.getElementById('dev-price-min').value = d.priceMin;
+                document.getElementById('dev-price-max').value = d.priceMax;
+                document.getElementById('dev-has-garage').value = (d.hasGarage !== undefined ? d.hasGarage : true) ? 'tak' : 'nie';
+                document.getElementById('dev-garage-capacity').value = d.garageCapacity || '';
+                document.getElementById('dev-rent').value = d.rent || '';
+                document.getElementById('dev-keys').value = (d.keysAvailable !== undefined && d.keysAvailable !== null) ? d.keysAvailable : '';
+                document.getElementById('dev-notes').value = d.notes;
+                document.getElementById('dev-form-title').innerText = "Edycja pakietu: " + d.district;
+
+                const wrapper = document.getElementById('admin-dev-images-wrapper');
+                wrapper.innerHTML = '';
+
+                if (d.img) {
+                    const imgLinks = d.img.split(',').map(l => l.trim()).filter(l => l.length > 0);
+                    imgLinks.forEach((link, index) => {
+                        if (index === 0) {
+                            wrapper.innerHTML += `
+                                <div class="flex gap-2 items-center admin-dev-img-row">
+                                    <input type="text" value="${link}" placeholder="URL Zdjęcia 1 (Główne)" class="dev-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            `;
+                        } else {
+                            window.addAdminDevImageInput(link);
+                        }
+                    });
+                } else {
+                    wrapper.innerHTML = `
+                        <div class="flex gap-2 items-center admin-dev-img-row">
+                            <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="dev-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                        </div>
+                    `;
+                }
+                window.updateAdminDevImageIndices();
+            };
+
+            window.saveArrangement = function() {
+                const id = document.getElementById('arr-id').value;
+                const title = document.getElementById('arr-title').value;
+                const price = parseInt(document.getElementById('arr-price').value) || 0;
+                if (!title || !price) return alert('Wpisz chociaż nazwę realizacji i cenę!');
+
+                const inputElements = document.querySelectorAll('.arr-img-input');
+                const linksArray = [];
+                inputElements.forEach(el => {
+                    const val = el.value.trim();
+                    if(val.length > 0) linksArray.push(val);
+                });
+
+                const finalImgString = linksArray.length > 0 ? linksArray.join(', ') : "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80";
+
+                const payload = {
+                    title,
+                    executor: document.getElementById('arr-executor').value || "Zespół Dynasty 8",
+                    price,
+                    category: document.getElementById('arr-category').value || "Aranżacja wnętrz",
+                    img: finalImgString,
+                    desc: document.getElementById('arr-desc').value || "Brak dodatkowego opisu realizacji."
+                };
+
+                if (id) {
+                    update(ref(db, `arrangements/${id}`), payload).then(() => { alert('Zaktualizowano aranżację!'); window.clearArrForm(); });
+                } else {
+                    const now = Date.now();
+                    payload.createdAt = now;
+                    payload.order = now;
+                    push(arrRef, payload).then(() => { alert('Dodano aranżację do bazy chmurowej!'); window.clearArrForm(); });
+                }
+            };
+
+            window.deleteArrangement = function(id) {
+                if (confirm('Usunąć tę aranżację na stałe?')) {
+                    remove(ref(db, `arrangements/${id}`)).then(() => window.clearArrForm());
+                }
+            };
+
+            window.editArrangement = function(id) {
+                const a = currentArrangements.find(x => x.id === id);
+                if (!a) return;
+                document.getElementById('arr-id').value = a.id;
+                document.getElementById('arr-title').value = a.title;
+                document.getElementById('arr-executor').value = a.executor || '';
+                document.getElementById('arr-price').value = a.price;
+                document.getElementById('arr-category').value = a.category || '';
+                document.getElementById('arr-desc').value = a.desc || '';
+                document.getElementById('arr-form-title').innerText = "Edycja: " + a.title;
+
+                const wrapper = document.getElementById('admin-arr-images-wrapper');
+                wrapper.innerHTML = '';
+
+                if (a.img) {
+                    const imgLinks = a.img.split(',').map(l => l.trim()).filter(l => l.length > 0);
+                    imgLinks.forEach((link, index) => {
+                        if (index === 0) {
+                            wrapper.innerHTML += `
+                                <div class="flex gap-2 items-center admin-arr-img-row">
+                                    <input type="text" value="${link}" placeholder="URL Zdjęcia 1 (Główne)" class="arr-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                    <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                                </div>
+                            `;
+                        } else {
+                            window.addAdminArrImageInput(link);
+                        }
+                    });
+                } else {
+                    wrapper.innerHTML = `
+                        <div class="flex gap-2 items-center admin-arr-img-row">
+                            <input type="text" placeholder="URL Zdjęcia 1 (Główne)" class="arr-img-input flex-1 bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <div class="w-8 h-8 flex items-center justify-center text-zinc-600 font-bold text-xs bg-zinc-950 rounded border border-zinc-800">1</div>
+                        </div>
+                    `;
+                }
+                window.updateAdminArrImageIndices();
+            };
+
+            window.reorderItems = function(kind, draggedId, targetId) {
+                let sourceList, pathPrefix, sortFn;
+                if (kind === 'normal') {
+                    sourceList = currentProperties; pathPrefix = 'properties'; sortFn = sortPropertiesByOrder;
+                } else if (kind === 'dev') {
+                    sourceList = currentDevProperties; pathPrefix = 'developer_properties'; sortFn = sortDevPropertiesByOrder;
+                } else if (kind === 'arr') {
+                    sourceList = currentArrangements; pathPrefix = 'arrangements'; sortFn = sortArrangementsByNewest;
+                } else {
+                    return;
+                }
+
+                const list = sortFn(sourceList).map(item => item.id);
+                const fromIndex = list.indexOf(draggedId);
+                const toIndex = list.indexOf(targetId);
+                if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
+
+                list.splice(fromIndex, 1);
+                list.splice(toIndex, 0, draggedId);
+
+                // Najwyższa wartość "order" trafia na górę listy (najnowsze / ręcznie przesunięte na górę).
+                const base = Date.now();
+                const updates = {};
+                list.forEach((id, index) => {
+                    updates[`${pathPrefix}/${id}/order`] = base - index;
+                });
+                update(ref(db), updates);
+            };
+
+            window.getLiveProperties = () => currentProperties;
+            window.getLiveDevProperties = () => currentDevProperties;
+            window.getLiveArrangements = () => currentArrangements;
+        }
+    </script>
+</body>
+</html>
