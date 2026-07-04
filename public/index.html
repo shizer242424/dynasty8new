@@ -27,7 +27,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0d0d0d; color: #ffffff; }
         .hero-bg {
-            background-image: linear-gradient(rgba(0,0,0,0.75), rgba(13,13,13,1)), url('https://wallpaperaccess.com/full/842445.jpg');
+            background-image: linear-gradient(rgba(0,0,0,0.75), rgba(13,13,13,1)), url('https://cdn.discordapp.com/attachments/1310297599617798195/1523066707785285794/image.png?ex=6a4ac1e8&is=6a497068&hm=95a1708d51a5d89c7603528688596269948d78a81ca082c274987434923a8a43&');
             background-size: cover;
             background-position: center;
         }
@@ -193,15 +193,45 @@
 
         /* --- Animowane pokazywanie/ukrywanie ofert przy filtrowaniu (Filtruj Wyniki / Resetuj filtry) --- */
         #allPropertiesGrid .all-grid-card {
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
         }
         #allPropertiesGrid .all-grid-card.card-filter-hidden {
             opacity: 0;
-            transform: translateY(18px) scale(0.95);
+            transform: translateY(26px) scale(0.94);
+            filter: blur(4px);
             pointer-events: none;
         }
         @media (prefers-reduced-motion: reduce) {
             #allPropertiesGrid .all-grid-card { transition: none; }
+        }
+
+        /* --- Pasek ładowania wyświetlany po kliknięciu "Filtruj Wyniki" --- */
+        #filterLoadingBar {
+            transition: opacity 0.25s ease;
+        }
+        #filterLoadingBar.hidden { display: none; }
+        .filter-loadbar-track {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+        .filter-loadbar-track::after {
+            content: '';
+            position: absolute; inset: 0;
+            width: 35%;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+            animation: filterLoadbarSweep 0.85s ease-in-out infinite;
+        }
+        @keyframes filterLoadbarSweep {
+            0% { transform: translateX(-140%); }
+            100% { transform: translateX(340%); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #allPropertiesGrid .all-grid-card.card-filter-hidden { filter: none; }
+            .filter-loadbar-track::after { animation: none; left: 0; width: 100%; }
         }
 
         /* --- Przycisk PROMOCJA (hero) --- */
@@ -268,6 +298,110 @@
         .step-num { font-family: 'Playfair Display', serif; color: #D4AF37; }
         .copy-btn { transition: all 0.2s ease; }
         .copy-btn.copied { background-color: #16a34a !important; color: white !important; }
+
+        /* --- Sekcja "Nasi specjaliści" - karty agentów --- */
+        .agent-card {
+            position: relative;
+            background: linear-gradient(160deg, #1a1a1a 0%, #121212 100%);
+            transition: transform 0.15s ease-out, box-shadow 0.5s ease, border-color 0.5s ease;
+            will-change: transform;
+        }
+        .agent-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.10), transparent 65%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+        .agent-card:hover {
+            box-shadow: 0 25px 50px -12px rgba(212,175,55,0.18), 0 0 0 1px rgba(212,175,55,0.12);
+        }
+        .agent-card:hover::before { opacity: 1; }
+        .agent-card:hover .agent-role {
+            border-color: rgba(212,175,55,0.5);
+            background: rgba(212,175,55,0.1);
+        }
+
+        /* Poświata / aura wokół zdjęcia */
+        .agent-avatar-wrap {
+            position: relative;
+            width: 6.5rem; height: 6.5rem;
+            margin: 0 auto 1rem;
+        }
+        .agent-avatar-glow {
+            position: absolute;
+            inset: -14px;
+            border-radius: 1.25rem;
+            background: radial-gradient(circle, rgba(212,175,55,0.55) 0%, rgba(212,175,55,0) 70%);
+            filter: blur(10px);
+            opacity: 0.35;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .agent-card:hover .agent-avatar-glow {
+            opacity: 0.9;
+            transform: scale(1.15);
+        }
+        .agent-avatar-ring {
+            position: absolute;
+            inset: -4px;
+            border-radius: 1.05rem;
+            background: conic-gradient(from 0deg, transparent 0%, #D4AF37 12%, transparent 28%, transparent 72%, #D4AF37 88%, transparent 100%);
+            opacity: 0.55;
+            animation: agent-ring-spin 7s linear infinite;
+            transition: opacity 0.4s ease;
+        }
+        .agent-card:hover .agent-avatar-ring {
+            opacity: 1;
+            animation-duration: 2.8s;
+        }
+        @keyframes agent-ring-spin {
+            to { transform: rotate(360deg); }
+        }
+        .agent-avatar {
+            position: relative;
+            z-index: 1;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 1rem;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+        }
+        .agent-card:hover .agent-avatar {
+            transform: scale(1.06);
+            border-color: #D4AF37;
+        }
+        .agent-role {
+            transition: all 0.4s ease;
+        }
+
+        /* Przycisk kopiowania numeru telefonu agenta */
+        .agent-phone-btn {
+            position: relative;
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .agent-phone-btn:hover {
+            background-color: #D4AF37 !important;
+            color: #111111 !important;
+            border-color: #D4AF37 !important;
+            transform: translateY(-2px);
+        }
+        .agent-phone-btn .agent-copy-icon { opacity: 0.5; transition: opacity 0.25s ease; }
+        .agent-phone-btn:hover .agent-copy-icon { opacity: 1; }
+        .agent-phone-btn.copied {
+            background-color: #16a34a !important;
+            border-color: #16a34a !important;
+            color: #fff !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .agent-avatar-ring { animation: none; opacity: 0.6; }
+            .agent-card, .agent-avatar, .agent-avatar-glow, .agent-phone-btn { transition: none; }
+        }
 
         /* --- Animacja wejścia na widok Promocja --- */
         .promo-in {
@@ -395,24 +529,16 @@
                         <span id="modalLocation" class="text-white font-medium">Brak danych</span>
                     </div>
                     <div>
-                        <span id="modalSpec1Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Pojemność nieruchomości</span>
+                        <span id="modalSpec1Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Garaż</span>
                         <span id="modalSpec1" class="text-white font-medium">Brak danych</span>
                     </div>
                     <div>
-                        <span id="modalSpec2Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Garaż</span>
+                        <span id="modalSpec2Label" class="text-[10px] text-zinc-500 block uppercase font-bold">Szafy</span>
                         <span id="modalSpec2" class="text-white font-medium">Brak danych</span>
                     </div>
                 </div>
 
-                <div id="modalExtraSpecsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-zinc-900/40 p-4 rounded-lg border border-zinc-800/80">
-                    <div>
-                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Garaż</span>
-                        <span id="modalGarageStatus" class="text-white font-medium">Brak danych</span>
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-zinc-500 block uppercase font-bold">Pojemność garażu</span>
-                        <span id="modalGarageCapacity" class="text-white font-medium">Brak danych</span>
-                    </div>
+                <div id="modalExtraSpecsGrid" class="grid grid-cols-2 gap-4 bg-zinc-900/40 p-4 rounded-lg border border-zinc-800/80">
                     <div>
                         <span class="text-[10px] text-zinc-500 block uppercase font-bold">Czynsz</span>
                         <span id="modalRent" class="text-white font-medium">Brak danych</span>
@@ -433,7 +559,7 @@
 
             <div class="p-4 bg-zinc-900/80 border-t border-zinc-800 flex justify-between items-center">
                 <span class="text-xs text-zinc-500">Zgłoś się do agenta podając nazwę obiektu.</span>
-                <button onclick="closeModal(); document.getElementById('contact').scrollIntoView({behavior: 'smooth'})" class="bg-d8gold hover:bg-d8golddark text-d8dark font-bold px-5 py-2 rounded text-xs uppercase tracking-wider transition-all">
+                <button onclick="closeModal(); showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 350)" class="bg-d8gold hover:bg-d8golddark text-d8dark font-bold px-5 py-2 rounded text-xs uppercase tracking-wider transition-all">
                     Zgłoś chęć zakupu
                 </button>
             </div>
@@ -509,12 +635,12 @@
             </div>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide text-zinc-300">
                 <button onclick="showView('all-properties')" class="hover:text-d8gold transition-all duration-300">Nieruchomości</button>
-                <button onclick="showView('main'); setTimeout(() => document.getElementById('interiors').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Aranżacje</button>
-                <button onclick="showView('main'); setTimeout(() => document.getElementById('calculator').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Kredyty</button>
-                <button onclick="showView('main'); setTimeout(() => document.getElementById('agents').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Agenci</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('interiors').scrollIntoView({behavior: 'smooth'}), 350)" class="hover:text-d8gold transition-all duration-300">Aranżacje</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('calculator').scrollIntoView({behavior: 'smooth'}), 350)" class="hover:text-d8gold transition-all duration-300">Kredyty</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('agents').scrollIntoView({behavior: 'smooth'}), 350)" class="hover:text-d8gold transition-all duration-300">Agenci</button>
             </div>
             <div>
-                <button onclick="showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 100)" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark px-5 py-2.5 rounded text-sm font-bold tracking-wide transition-all duration-300 uppercase shadow-lg block">Umów Spotkanie!</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 350)" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark px-5 py-2.5 rounded text-sm font-bold tracking-wide transition-all duration-300 uppercase shadow-lg block">Umów Spotkanie!</button>
             </div>
         </div>
     </nav>
@@ -541,22 +667,34 @@
             <div class="bg-d8card/95 backdrop-blur-md p-6 rounded-xl border border-zinc-800 shadow-2xl grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Lokalizacja</label>
-                    <select id="mainSearchLocation" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
-                        <option value="all">Wszystkie lokalizacje</option>
-                        <option value="Vinewood">Vinewood Hills</option>
-                        <option value="Del Perro">Del Perro</option>
-                        <option value="Rockford Hills">Rockford Hills</option>
-                        <option value="Pillbox Hill">Pillbox Hill</option>
-                    </select>
+                    <div class="relative">
+                        <select id="mainSearchLocation" class="w-full appearance-none bg-zinc-900 border border-zinc-700 rounded p-3 pr-9 text-sm text-white focus:outline-none focus:border-d8gold">
+                            <option value="all">Wszystkie lokalizacje</option>
+                            <option value="Del Perro">Del Perro</option>
+                            <option value="Vinewood">Vinewood</option>
+                            <option value="Pillbox Hill">Pillbox Hill</option>
+                            <option value="Rockford Drive">Rockford Drive</option>
+                            <option value="Vespucci">Vespucci</option>
+                            <option value="Paleto Bay">Paleto Bay</option>
+                            <option value="Sandy Shores">Sandy Shores</option>
+                            <option value="Mirror Park">Mirror Park</option>
+                            <option value="Eclipse">Eclipse</option>
+                            <option value="Chumash">Chumash</option>
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Typ obiektu</label>
-                    <select id="mainSearchType" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
-                        <option value="all">Wszystkie typy</option>
-                        <option value="apartament">Penthouse / Apartament</option>
-                        <option value="willa">Willa / Dom (w tym nowe)</option>
-                        <option value="biuro">Biuro komercyjne</option>
-                    </select>
+                    <div class="relative">
+                        <select id="mainSearchType" class="w-full appearance-none bg-zinc-900 border border-zinc-700 rounded p-3 pr-9 text-sm text-white focus:outline-none focus:border-d8gold">
+                            <option value="all">Wszystkie typy</option>
+                            <option value="willa">Willa</option>
+                            <option value="dom">Dom</option>
+                            <option value="apartament">Apartament</option>
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Budżet maksymalny</label>
@@ -600,16 +738,35 @@
             </div>
         </section>
 
-        <section id="section-dev-properties" class="py-16 bg-zinc-950 border-y border-zinc-900">
+        <section id="section-dev-properties" class="py-16 bg-zinc-950 border-y border-zinc-900 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="reveal mb-10 text-center md:text-left">
-                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Rynek Pierwotny</span>
-                    <h2 class="font-display text-3xl md:text-4xl font-bold">Mieszkania Deweloperskie Dynasty</h2>
-                    <p class="text-zinc-500 text-sm mt-1">Sprawdź szacunkowe koszty zakupu nowych, deweloperskich obiektów w poszczególnych rejonach miasta.</p>
+                <div class="reveal flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-10 text-center md:text-left">
+                    <div>
+                        <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Rynek Pierwotny</span>
+                        <h2 class="font-display text-3xl md:text-4xl font-bold">Mieszkania Deweloperskie Dynasty</h2>
+                        <p class="text-zinc-500 text-sm mt-1">Sprawdź szacunkowe koszty zakupu nowych, deweloperskich obiektów w poszczególnych rejonach miasta.</p>
+                    </div>
+                    <div class="flex gap-2 justify-center md:justify-end">
+                        <button onclick="slideDevCarousel('left')" class="bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-white p-3 rounded-lg transition-all duration-300 active:scale-90">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button onclick="slideDevCarousel('right')" class="bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-white p-3 rounded-lg transition-all duration-300 active:scale-90">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <div id="developerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+                <div class="relative w-full">
+                    <div id="developerGrid" class="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar snap-x snap-mandatory pb-4"></div>
+                </div>
             </div>
         </section>
+
+        <div class="reveal text-center py-10 bg-zinc-950 border-b border-zinc-900">
+            <button onclick="showView('all-properties')" class="inline-flex items-center gap-2 text-d8gold hover:text-white text-sm font-semibold uppercase tracking-widest transition-all duration-300 group">
+                Zobacz Całą Ofertę
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </button>
+        </div>
 
         <section id="interiors" class="py-20 bg-zinc-900/60 border-b border-zinc-900">
             <div class="max-w-4xl mx-auto px-4">
@@ -698,33 +855,57 @@
                 <h2 class="font-display text-3xl md:text-4xl font-bold">Poznaj Naszych Agentów</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="reveal bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
-                    <img src="https://cdn.discordapp.com/attachments/1310297599617798195/1510358657790116112/image.png?ex=6a4a025d&is=6a48b0dd&hm=5de7744246fe87cd0315f5e77311de78d6d802c67092ca046fb1ab5da8bd4b3f&" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                <div class="agent-card reveal rounded-xl border border-zinc-800 p-6 text-center flex flex-col items-center">
+                    <div class="agent-avatar-wrap">
+                        <div class="agent-avatar-glow"></div>
+                        <div class="agent-avatar-ring"></div>
+                        <img src="https://cdn.discordapp.com/attachments/1310297599617798195/1523081797964009572/image.png?ex=6a4acff6&is=6a497e76&hm=30adfddbebb90fc2d64f6a7e7583c4a9c6a0566c7c642d1988ae871eef9fe3d5&" class="agent-avatar border-2 border-zinc-700">
+                    </div>
                     <h3 class="font-display font-bold text-lg">Drex Reeve</h3>
-                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">OWNER</span>
-                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
-                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ NUMER</span>
+                    <span class="agent-role text-xs text-d8gold font-semibold uppercase tracking-wider mb-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/60 inline-block">OWNER</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 mt-2 h-10 line-clamp-2">OPIS</p>
+                    <button type="button" onclick="window.copyAgentPhone(this)" data-phone="NUMER" class="agent-phone-btn text-xs bg-zinc-900 text-zinc-300 px-3 py-2 rounded font-mono border border-zinc-800">
+                        <span>☎</span><span class="agent-phone-number">NUMER</span><span class="agent-copy-icon">⧉</span>
+                    </button>
                 </div>
-                <div class="reveal reveal-delay-1 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
-                    <img src="https://media.discordapp.net/attachments/1310297599617798195/1518226543048921221/image.png?ex=6a4a49a7&is=6a48f827&hm=cf8b000c19a7a84e0c69da50d3524214bd6a598de6259ccd046a90a128952f27&=&format=webp&quality=lossless" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                <div class="agent-card reveal reveal-delay-1 rounded-xl border border-zinc-800 p-6 text-center flex flex-col items-center">
+                    <div class="agent-avatar-wrap">
+                        <div class="agent-avatar-glow"></div>
+                        <div class="agent-avatar-ring"></div>
+                        <img src="https://cdn.discordapp.com/attachments/1310297599617798195/1523080225607520477/image.png?ex=6a4ace7f&is=6a497cff&hm=6a70522d8a86366a3bddf39b4528a6723e3e25762e953e440ccda16e7352e40c&" class="agent-avatar border-2 border-zinc-700">
+                    </div>
                     <h3 class="font-display font-bold text-lg">Nyx Reeve</h3>
-                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">CO-OWNER & INTERIOR DESIGNER</span>
-                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS.</p>
-                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ NUMER</span>
+                    <span class="agent-role text-xs text-d8gold font-semibold uppercase tracking-wider mb-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/60 inline-block">CO-OWNER & INTERIOR DESIGNER</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 mt-2 h-10 line-clamp-2">OPIS.</p>
+                    <button type="button" onclick="window.copyAgentPhone(this)" data-phone="NUMER" class="agent-phone-btn text-xs bg-zinc-900 text-zinc-300 px-3 py-2 rounded font-mono border border-zinc-800">
+                        <span>☎</span><span class="agent-phone-number">NUMER</span><span class="agent-copy-icon">⧉</span>
+                    </button>
                 </div>
-                <div class="reveal reveal-delay-2 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
-                    <img src="https://cdn.discordapp.com/attachments/1400162811388367018/1500062169503367300/FiveM_b3570_GTAProcess_2026-04-28_17-20-45_526.png?ex=6a4a1fc3&is=6a48ce43&hm=7132e21c5e630a9f715a7b02cc93b5af6379c2c7dc5d714a0a2873c61e60d291&" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                <div class="agent-card reveal reveal-delay-2 rounded-xl border border-zinc-800 p-6 text-center flex flex-col items-center">
+                    <div class="agent-avatar-wrap">
+                        <div class="agent-avatar-glow"></div>
+                        <div class="agent-avatar-ring"></div>
+                        <img src="https://cdn.discordapp.com/attachments/1400162811388367018/1500062169503367300/FiveM_b3570_GTAProcess_2026-04-28_17-20-45_526.png?ex=6a4a1fc3&is=6a48ce43&hm=7132e21c5e630a9f715a7b02cc93b5af6379c2c7dc5d714a0a2873c61e60d291&" class="agent-avatar border-2 border-zinc-700">
+                    </div>
                     <h3 class="font-display font-bold text-lg">Madison Halloway</h3>
-                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">R.E. AGENT & INTERIOR DESIGNER</span>
-                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
-                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ NUMER</span>
+                    <span class="agent-role text-xs text-d8gold font-semibold uppercase tracking-wider mb-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/60 inline-block">R.E. AGENT & INTERIOR DESIGNER</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 mt-2 h-10 line-clamp-2">OPIS</p>
+                    <button type="button" onclick="window.copyAgentPhone(this)" data-phone="NUMER" class="agent-phone-btn text-xs bg-zinc-900 text-zinc-300 px-3 py-2 rounded font-mono border border-zinc-800">
+                        <span>☎</span><span class="agent-phone-number">NUMER</span><span class="agent-copy-icon">⧉</span>
+                    </button>
                 </div>
-                <div class="reveal reveal-delay-3 bg-d8card rounded-xl border border-zinc-800 p-6 text-center group hover:border-d8gold transition-all duration-500 flex flex-col items-center">
-                    <img src="https://cdn.discordapp.com/attachments/1400162811388367018/1499369996768251944/27.04.png?ex=6a4a3e20&is=6a48eca0&hm=cfffddee605bf53d49546991e0bec293c09aeaa6bb7980d64c45e77bab893548&" class="w-24 h-24 rounded-xl object-cover border-2 border-zinc-700 mb-4">
+                <div class="agent-card reveal reveal-delay-3 rounded-xl border border-zinc-800 p-6 text-center flex flex-col items-center">
+                    <div class="agent-avatar-wrap">
+                        <div class="agent-avatar-glow"></div>
+                        <div class="agent-avatar-ring"></div>
+                        <img src="https://cdn.discordapp.com/attachments/1400162811388367018/1499369996768251944/27.04.png?ex=6a4a3e20&is=6a48eca0&hm=cfffddee605bf53d49546991e0bec293c09aeaa6bb7980d64c45e77bab893548&" class="agent-avatar border-2 border-zinc-700">
+                    </div>
                     <h3 class="font-display font-bold text-lg">Turner Cordero Halloway</h3>
-                    <span class="text-xs text-d8gold font-semibold uppercase tracking-wider mb-2">R.E. AGENT</span>
-                    <p class="text-zinc-400 text-xs px-2 mb-4 h-10 line-clamp-2">OPIS</p>
-                    <span class="text-xs bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded block font-mono border border-zinc-800 w-full">☎ 555-0111</span>
+                    <span class="agent-role text-xs text-d8gold font-semibold uppercase tracking-wider mb-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/60 inline-block">R.E. AGENT</span>
+                    <p class="text-zinc-400 text-xs px-2 mb-4 mt-2 h-10 line-clamp-2">OPIS</p>
+                    <button type="button" onclick="window.copyAgentPhone(this)" data-phone="555-0111" class="agent-phone-btn text-xs bg-zinc-900 text-zinc-300 px-3 py-2 rounded font-mono border border-zinc-800">
+                        <span>☎</span><span class="agent-phone-number">555-0111</span><span class="agent-copy-icon">⧉</span>
+                    </button>
                 </div>
             </div>
         </section>
@@ -750,7 +931,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Adres Nieruchomości</label>
-                            <input type="text" id="appt-address" placeholder="np. Vinewood Hills 12" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                            <input type="text" id="appt-address" placeholder="np. Vinewood 12" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Preferowana Godzina Spotkania</label>
@@ -835,23 +1016,34 @@
             <div class="bg-d8card p-6 rounded-xl border border-zinc-800 mb-12 grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Lokalizacja / Rejon</label>
-                    <select id="searchLocation" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
-                        <option value="all">Wszystkie lokalizacje</option>
-                        <option value="Vinewood">Vinewood Hills</option>
-                        <option value="Del Perro">Del Perro</option>
-                        <option value="Rockford Hills">Rockford Hills</option>
-                        <option value="Pillbox Hill">Pillbox Hill</option>
-                    </select>
+                    <div class="relative">
+                        <select id="searchLocation" class="w-full appearance-none bg-zinc-900 border border-zinc-700 rounded p-3 pr-9 text-sm text-white focus:outline-none focus:border-d8gold">
+                            <option value="all">Wszystkie lokalizacje</option>
+                            <option value="Del Perro">Del Perro</option>
+                            <option value="Vinewood">Vinewood</option>
+                            <option value="Pillbox Hill">Pillbox Hill</option>
+                            <option value="Rockford Drive">Rockford Drive</option>
+                            <option value="Vespucci">Vespucci</option>
+                            <option value="Paleto Bay">Paleto Bay</option>
+                            <option value="Sandy Shores">Sandy Shores</option>
+                            <option value="Mirror Park">Mirror Park</option>
+                            <option value="Eclipse">Eclipse</option>
+                            <option value="Chumash">Chumash</option>
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Typ / Standard oferty</label>
-                    <select id="searchType" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
-                        <option value="all">Wszystkie typy</option>
-                        <option value="apartament">Penthouse / Apartament</option>
-                        <option value="willa">Willa / Posiadłość domowa</option>
-                        <option value="biuro">Biuro komercyjne</option>
-                        <option value="deweloperski">Tylko Pakiety Nowych Domów</option>
-                    </select>
+                    <div class="relative">
+                        <select id="searchType" class="w-full appearance-none bg-zinc-900 border border-zinc-700 rounded p-3 pr-9 text-sm text-white focus:outline-none focus:border-d8gold">
+                            <option value="all">Wszystkie typy</option>
+                            <option value="willa">Willa</option>
+                            <option value="dom">Dom</option>
+                            <option value="apartament">Apartament</option>
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Maksymalny budżet</label>
@@ -864,6 +1056,17 @@
                 <div class="flex items-end">
                     <button onclick="filterProperties()" class="w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 px-6 rounded shadow-lg uppercase text-xs tracking-wider transition-all duration-300">Filtruj Wyniki</button>
                 </div>
+            </div>
+
+            <div id="filterLoadingBar" class="hidden mt-6 mb-8">
+                <div class="flex items-center justify-center gap-3 text-d8gold text-[11px] uppercase tracking-[0.2em] font-semibold mb-3">
+                    <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                        <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path>
+                    </svg>
+                    <span>Dobieramy pasujące oferty…</span>
+                </div>
+                <div class="filter-loadbar-track"></div>
             </div>
 
             <div id="allPropertiesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
@@ -983,15 +1186,21 @@
                         <input type="text" id="prop-title" placeholder="Nazwa Obiektu" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                         <div class="grid grid-cols-2 gap-2">
                             <select id="prop-location" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
-                                <option value="Vinewood">Vinewood Hills</option>
                                 <option value="Del Perro">Del Perro</option>
-                                <option value="Rockford Hills">Rockford Hills</option>
+                                <option value="Vinewood">Vinewood</option>
                                 <option value="Pillbox Hill">Pillbox Hill</option>
+                                <option value="Rockford Drive">Rockford Drive</option>
+                                <option value="Vespucci">Vespucci</option>
+                                <option value="Paleto Bay">Paleto Bay</option>
+                                <option value="Sandy Shores">Sandy Shores</option>
+                                <option value="Mirror Park">Mirror Park</option>
+                                <option value="Eclipse">Eclipse</option>
+                                <option value="Chumash">Chumash</option>
                             </select>
                             <select id="prop-type" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
-                                <option value="apartament">Apartament</option>
                                 <option value="willa">Willa</option>
-                                <option value="biuro">Biuro</option>
+                                <option value="dom">Dom</option>
+                                <option value="apartament">Apartament</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -1003,14 +1212,13 @@
                             </select>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="prop-rooms" placeholder="np. 3 Pokoje" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                             <select id="prop-has-garage" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                                 <option value="tak">Garaż: Tak</option>
                                 <option value="nie">Garaż: Nie</option>
                             </select>
+                            <input type="number" id="prop-closets" placeholder="Ilość szaf" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                         </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <input type="number" id="prop-garage-capacity" placeholder="Pojemność (aut)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="prop-rent" placeholder="Czynsz ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                             <input type="number" id="prop-keys" placeholder="Dostępne klucze" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                         </div>
@@ -1045,7 +1253,25 @@
                     <div class="lg:col-span-1 bg-d8card p-6 rounded-xl border border-zinc-800 h-fit space-y-4">
                         <h3 id="dev-form-title" class="font-bold text-lg text-amber-500 border-b border-zinc-800 pb-2">Dodaj Pakiet Deweloperski</h3>
                         <input type="hidden" id="dev-id">
-                        <input type="text" id="dev-district" placeholder="Nazwa Dzielnicy (np. Del Perro)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="dev-district" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="Del Perro">Del Perro</option>
+                                <option value="Vinewood">Vinewood</option>
+                                <option value="Pillbox Hill">Pillbox Hill</option>
+                                <option value="Rockford Drive">Rockford Drive</option>
+                                <option value="Vespucci">Vespucci</option>
+                                <option value="Paleto Bay">Paleto Bay</option>
+                                <option value="Sandy Shores">Sandy Shores</option>
+                                <option value="Mirror Park">Mirror Park</option>
+                                <option value="Eclipse">Eclipse</option>
+                                <option value="Chumash">Chumash</option>
+                            </select>
+                            <select id="dev-type" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                                <option value="willa">Willa</option>
+                                <option value="dom">Dom</option>
+                                <option value="apartament">Apartament</option>
+                            </select>
+                        </div>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="dev-price-min" placeholder="Cena od ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                             <input type="number" id="dev-price-max" placeholder="Cena do ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
@@ -1055,7 +1281,7 @@
                                 <option value="tak">Garaż: Tak</option>
                                 <option value="nie">Garaż: Nie</option>
                             </select>
-                            <input type="number" id="dev-garage-capacity" placeholder="Pojemność (aut)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
+                            <input type="number" id="dev-closets" placeholder="Ilość szaf" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="dev-rent" placeholder="Czynsz ($)" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-sm text-white">
@@ -1142,6 +1368,43 @@
         let loadedArrangements = [];
         let currentModalImages = [];
         let currentModalImageIndex = 0;
+
+        // --- Sekcja "Nasi specjaliści": kopiowanie numeru telefonu ---
+        window.copyAgentPhone = function (btn) {
+            const phone = btn.getAttribute('data-phone') || '';
+            const numberEl = btn.querySelector('.agent-phone-number');
+            const original = numberEl ? numberEl.textContent : '';
+
+            navigator.clipboard.writeText(phone).then(() => {
+                btn.classList.add('copied');
+                if (numberEl) numberEl.textContent = 'Skopiowano!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    if (numberEl) numberEl.textContent = original;
+                }, 1500);
+            }).catch(() => {});
+        };
+
+        // --- Sekcja "Nasi specjaliści": subtelny efekt 3D przy najechaniu ---
+        (function initAgentCardTilt() {
+            const cards = document.querySelectorAll('#agents .agent-card');
+            const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+            if (isTouch) return;
+
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
+                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
+                    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        })();
 
         // FUNKCJE OBSŁUGI NOWEGO MODALA CENNIKA
         function openCennikModal() {
@@ -1330,15 +1593,13 @@
                 document.getElementById('modalLocationLabel').innerText = "Lokalizacja / Rejon";
                 document.getElementById('modalLocation').innerText = item.location;
                 
-                document.getElementById('modalSpec1Label').innerText = "Pokoje";
-                document.getElementById('modalSpec1').innerText = item.rooms;
-                document.getElementById('modalSpec2Label').innerText = "Garaż";
-                document.getElementById('modalSpec2').innerText = formatGarageText(item);
+                document.getElementById('modalSpec1Label').innerText = "Garaż";
+                document.getElementById('modalSpec1').innerText = formatGarageText(item);
+                document.getElementById('modalSpec2Label').innerText = "Szafy";
+                document.getElementById('modalSpec2').innerText = formatClosetsText(item);
                 document.getElementById('modalDesc').innerText = item.desc;
 
                 document.getElementById('modalExtraSpecsGrid').classList.remove('hidden');
-                document.getElementById('modalGarageStatus').innerText = (item.hasGarage !== undefined ? item.hasGarage : !!item.garage) ? 'Tak' : 'Nie';
-                document.getElementById('modalGarageCapacity').innerText = formatGarageCapacityText(item);
                 document.getElementById('modalRent').innerText = formatRentText(item);
                 document.getElementById('modalKeys').innerText = formatKeysText(item);
                 
@@ -1366,7 +1627,7 @@
                 if(!item) return;
 
                 document.getElementById('modalBadge').className = "text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-amber-500 text-d8dark";
-                document.getElementById('modalBadge').innerText = "DEWELOPERSKI";
+                document.getElementById('modalBadge').innerText = `NOWY DOM • ${typeLabel(item.type).toUpperCase()}`;
                 document.getElementById('modalTitle').innerText = `Nowy Dom: ${item.district}`;
                 
                 if (item.img) {
@@ -1381,15 +1642,13 @@
                 document.getElementById('modalLocationLabel').innerText = "Lokalizacja / Rejon";
                 document.getElementById('modalLocation').innerText = item.district;
                 
-                document.getElementById('modalSpec1Label').innerText = "Widełki od";
-                document.getElementById('modalSpec1').innerText = `$${parseInt(item.priceMin).toLocaleString()}`;
-                document.getElementById('modalSpec2Label').innerText = "Widełki do";
-                document.getElementById('modalSpec2').innerText = `$${parseInt(item.priceMax).toLocaleString()}`;
+                document.getElementById('modalSpec1Label').innerText = "Garaż";
+                document.getElementById('modalSpec1').innerText = formatGarageText(item);
+                document.getElementById('modalSpec2Label').innerText = "Szafy";
+                document.getElementById('modalSpec2').innerText = formatClosetsText(item);
                 document.getElementById('modalDesc').innerText = item.notes || "Brak dodatkowych uwag deweloperskich dla tego rejonu.";
 
                 document.getElementById('modalExtraSpecsGrid').classList.remove('hidden');
-                document.getElementById('modalGarageStatus').innerText = item.hasGarage ? 'Tak' : 'Nie';
-                document.getElementById('modalGarageCapacity').innerText = formatGarageCapacityText(item);
                 document.getElementById('modalRent').innerText = formatRentText(item);
                 document.getElementById('modalKeys').innerText = formatKeysText(item);
                 
@@ -1508,7 +1767,7 @@
                                 </div>
                                 <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${p.desc}</p>
                                 <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
-                                    <span>🛏️ ${p.rooms}</span>
+                                    <span>🚪 ${formatClosetsText(p)}</span>
                                     <span>🚗 ${formatGarageText(p)}</span>
                                     <span>📍 ${p.location}</span>
                                 </div>
@@ -1531,7 +1790,7 @@
                 devProperties.forEach(d => {
                     const firstImg = d.img ? d.img.split(',')[0].trim() : 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80';
                     container.innerHTML += `
-                        <div onclick="window.openModal('dev', '${d.id}')" class="developer-card cursor-pointer bg-d8card rounded-xl border border-zinc-800 overflow-hidden group hover:border-amber-500/60 hover:shadow-[0_10px_30px_rgba(245,158,11,0.05)] transition-all duration-300"
+                        <div onclick="window.openModal('dev', '${d.id}')" class="developer-card cursor-pointer bg-d8card rounded-xl border border-zinc-800 overflow-hidden group hover:border-amber-500/60 hover:shadow-[0_10px_30px_rgba(245,158,11,0.05)] transition-all duration-300 min-w-full sm:min-w-[calc(50%-12px)] lg:min-w-[calc(25%-18px)] snap-start flex-shrink-0"
                              data-district="${d.district}" data-price-min="${d.priceMin}">
                             <div class="h-40 relative overflow-hidden bg-zinc-900">
                                 <img src="${firstImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -1552,6 +1811,9 @@
                                 <p class="text-zinc-400 text-xs border-t border-zinc-900 pt-2.5 line-clamp-2">${d.notes || 'Brak dodatkowych wytycznych dla rejonu.'}</p>
                                 <div class="flex justify-between text-[10px] text-zinc-500 font-semibold uppercase pt-1">
                                     <span>🚗 ${formatGarageText(d)}</span>
+                                    <span>🚪 ${formatClosetsText(d)}</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
                                     <span>💵 ${formatRentText(d)}</span>
                                     <span>🔑 ${formatKeysText(d)}</span>
                                 </div>
@@ -1607,23 +1869,23 @@
             return s === 'sprzedany' || s === 'sprzedane';
         }
 
-        // Zwraca czytelny tekst o garażu. Obsługuje nowe pola (hasGarage/garageCapacity)
+        // Zwraca czytelny tekst o garażu. Obsługuje nowe pole (hasGarage)
         // oraz stare wpisy, które miały tylko wolnotekstowe pole "garage".
+        function typeLabel(type) {
+            const labels = { willa: 'Willa', dom: 'Dom', apartament: 'Apartament' };
+            return labels[type] || 'Dom';
+        }
+
         function formatGarageText(item) {
             if (item.hasGarage !== undefined && item.hasGarage !== null) {
-                if (item.hasGarage) {
-                    const cap = item.garageCapacity ? `${item.garageCapacity} aut` : 'brak danych o pojemności';
-                    return `POSIADA GARAŻ`;
-                }
-                return 'BRAK GARAŻU';
+                return item.hasGarage ? 'Tak' : 'Nie';
             }
             return item.garage || 'Brak danych';
         }
 
-        function formatGarageCapacityText(item) {
-            if (!item.hasGarage) return '—';
-            return (item.garageCapacity !== undefined && item.garageCapacity !== null && item.garageCapacity !== '')
-                ? `${item.garageCapacity} aut`
+        function formatClosetsText(item) {
+            return (item.closets !== undefined && item.closets !== null && item.closets !== '')
+                ? `${item.closets} szt.`
                 : 'Brak danych';
         }
 
@@ -1760,7 +2022,7 @@
                             </div>
                             <p class="text-zinc-400 text-xs mb-4 line-clamp-2">${p.desc}</p>
                             <div class="border-t border-zinc-800 pt-4 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
-                                <span>🛏️ ${p.rooms}</span>
+                                <span>🚪 ${formatClosetsText(p)}</span>
                                 <span>🚗 ${formatGarageText(p)}</span>
                                 <span>📍 ${p.location}</span>
                             </div>
@@ -1776,7 +2038,7 @@
                 const firstImg = d.img ? d.img.split(',')[0].trim() : 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80';
                 fullGrid.innerHTML += `
                     <div onclick="window.openModal('dev', '${d.id}')" class="all-grid-card cursor-pointer bg-d8card rounded-xl overflow-hidden border border-zinc-800 group hover:border-amber-500/50 hover:shadow-[0_10px_30px_rgba(245,158,11,0.05)] transition-all duration-500"
-                         data-location="${d.district}" data-type="deweloperski" data-price="${d.priceMin}">
+                         data-location="${d.district}" data-type="${d.type || 'dom'}" data-price="${d.priceMin}">
                         <div class="relative overflow-hidden h-64 bg-zinc-900">
                             <img src="${firstImg}" alt="${d.district}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                             <span class="absolute top-4 left-4 bg-amber-500 text-d8dark text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider shadow-md">Nowy Dom</span>
@@ -1794,6 +2056,9 @@
                             </div>
                             <div class="pt-2 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
                                 <span>🚗 ${formatGarageText(d)}</span>
+                                <span>🚪 ${formatClosetsText(d)}</span>
+                            </div>
+                            <div class="pt-2 flex justify-between text-[10px] text-zinc-500 font-semibold uppercase">
                                 <span>💵 ${formatRentText(d)}</span>
                                 <span>🔑 ${formatKeysText(d)}</span>
                             </div>
@@ -1807,11 +2072,7 @@
             const selectedType = document.getElementById('mainSearchType').value;
             const enteredPrice = document.getElementById('mainSearchPrice').value;
             document.getElementById('searchLocation').value = selectedLoc;
-            if(selectedType === 'willa') {
-                document.getElementById('searchType').value = 'willa';
-            } else {
-                document.getElementById('searchType').value = selectedType;
-            }
+            document.getElementById('searchType').value = selectedType;
             document.getElementById('searchPrice').value = enteredPrice;
             showView('all-properties', { keepFilters: true });
         }
@@ -1859,47 +2120,74 @@
             return visibleCount;
         }
 
+        let filterLoadingTimeout = null;
+
+        function showFilterLoading() {
+            const bar = document.getElementById('filterLoadingBar');
+            if (!bar) return;
+            bar.classList.remove('hidden');
+            bar.style.opacity = '1';
+        }
+
+        function hideFilterLoading() {
+            const bar = document.getElementById('filterLoadingBar');
+            if (!bar) return;
+            bar.style.opacity = '0';
+            setTimeout(() => bar.classList.add('hidden'), 250);
+        }
+
         function filterProperties() {
-            const selectedLocation = document.getElementById('searchLocation').value;
-            const selectedType = document.getElementById('searchType').value;
-            const enteredPrice = document.getElementById('searchPrice').value.trim();
-            const hasPriceLimit = enteredPrice !== '' && !isNaN(parseFloat(enteredPrice));
-            const priceLimit = hasPriceLimit ? parseFloat(enteredPrice) : null;
-            const cards = document.querySelectorAll('#allPropertiesGrid .all-grid-card');
+            // Pokazujemy krótką animację "ładowania" pod filtrami, a dopiero po niej
+            // odsłaniamy przefiltrowane oferty — daje to wrażenie realnego wyszukiwania.
+            if (filterLoadingTimeout) clearTimeout(filterLoadingTimeout);
+            showFilterLoading();
+            document.getElementById('noResults').style.display = 'none';
 
-            const visibleCount = animateCardsVisibility(cards, card => {
-                const cardLocation = card.getAttribute('data-location');
-                const cardType = card.getAttribute('data-type');
-                const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
-                const matchLocation = (selectedLocation === 'all' || cardLocation.toLowerCase().includes(selectedLocation.toLowerCase()));
+            filterLoadingTimeout = setTimeout(() => {
+                const selectedLocation = document.getElementById('searchLocation').value;
+                const selectedType = document.getElementById('searchType').value;
+                const enteredPrice = document.getElementById('searchPrice').value.trim();
+                const hasPriceLimit = enteredPrice !== '' && !isNaN(parseFloat(enteredPrice));
+                const priceLimit = hasPriceLimit ? parseFloat(enteredPrice) : null;
+                const cards = document.querySelectorAll('#allPropertiesGrid .all-grid-card');
 
-                let matchType = false;
-                if (selectedType === 'all') {
-                    matchType = true;
-                } else if (selectedType === 'willa') {
-                    matchType = (cardType === 'willa' || cardType === 'deweloperski');
-                } else {
-                    matchType = (cardType === selectedType);
-                }
+                const visibleCount = animateCardsVisibility(cards, card => {
+                    const cardLocation = card.getAttribute('data-location');
+                    const cardType = card.getAttribute('data-type');
+                    const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
+                    const matchLocation = (selectedLocation === 'all' || cardLocation.toLowerCase().includes(selectedLocation.toLowerCase()));
 
-                const matchPrice = (priceLimit === null || cardPrice <= priceLimit);
+                    const matchType = (selectedType === 'all' || cardType === selectedType);
 
-                return matchLocation && matchType && matchPrice;
-            });
+                    const matchPrice = (priceLimit === null || cardPrice <= priceLimit);
 
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+                    return matchLocation && matchType && matchPrice;
+                });
+
+                hideFilterLoading();
+                document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+                filterLoadingTimeout = null;
+            }, 600);
         }
 
         function resetFilters() {
+            if (filterLoadingTimeout) clearTimeout(filterLoadingTimeout);
+            showFilterLoading();
+
             document.getElementById('searchLocation').value = 'all';
             document.getElementById('searchType').value = 'all';
             document.getElementById('searchPrice').value = '';
             document.getElementById('mainSearchLocation').value = 'all';
             document.getElementById('mainSearchType').value = 'all';
             document.getElementById('mainSearchPrice').value = '';
-            const cards = document.querySelectorAll('#allPropertiesGrid .all-grid-card');
-            animateCardsVisibility(cards, () => true);
-            document.getElementById('noResults').style.display = 'none';
+
+            filterLoadingTimeout = setTimeout(() => {
+                const cards = document.querySelectorAll('#allPropertiesGrid .all-grid-card');
+                animateCardsVisibility(cards, () => true);
+                hideFilterLoading();
+                document.getElementById('noResults').style.display = 'none';
+                filterLoadingTimeout = null;
+            }, 450);
         }
 
         window.renderAdminList = function(properties) {
@@ -1925,7 +2213,7 @@
                             <span class="text-zinc-600 text-base select-none px-1">☰</span>
                             <img src="${firstImg}" class="w-10 h-10 object-cover rounded">
                             <div>
-                                <h4 class="font-bold text-white">${p.title}</h4>
+                                <h4 class="font-bold text-white">${p.title} <span class="text-d8gold font-normal">(${typeLabel(p.type)})</span></h4>
                                 <p class="text-zinc-500">$${parseInt(p.price).toLocaleString()} | ${p.location}</p>
                             </div>
                         </div>
@@ -1960,7 +2248,7 @@
                             <span class="text-zinc-600 text-base select-none px-1">☰</span>
                             <img src="${firstImg}" class="w-10 h-10 object-cover rounded">
                             <div>
-                                <h4 class="font-bold text-white">Nowy Dom: ${d.district}</h4>
+                                <h4 class="font-bold text-white">Nowy Dom: ${d.district} <span class="text-amber-500 font-normal">(${typeLabel(d.type)})</span></h4>
                                 <p class="text-zinc-500">Przedział: $${parseInt(d.priceMin).toLocaleString()} - $${parseInt(d.priceMax).toLocaleString()}</p>
                             </div>
                         </div>
@@ -2043,6 +2331,15 @@
             else { carousel.scrollLeft += cardWidth; }
         }
 
+        function slideDevCarousel(direction) {
+            const carousel = document.getElementById('developerGrid');
+            const firstCard = carousel.querySelector('.developer-card');
+            if(!firstCard) return;
+            const cardWidth = firstCard.offsetWidth + 24;
+            if (direction === 'left') { carousel.scrollLeft -= cardWidth; }
+            else { carousel.scrollLeft += cardWidth; }
+        }
+
         function calculateLoan() {
             const price = parseInt(document.getElementById('inputPrice').value);
             const term = parseInt(document.getElementById('inputTerm').value);
@@ -2117,9 +2414,8 @@
             document.getElementById('prop-price').value = '';
             document.getElementById('prop-status').value = 'Wolne';
             document.getElementById('prop-desc').value = '';
-            document.getElementById('prop-rooms').value = '';
             document.getElementById('prop-has-garage').value = 'tak';
-            document.getElementById('prop-garage-capacity').value = '';
+            document.getElementById('prop-closets').value = '';
             document.getElementById('prop-rent').value = '';
             document.getElementById('prop-keys').value = '';
             document.getElementById('form-title').innerText = "Dodaj Nową Nieruchomość";
@@ -2135,11 +2431,12 @@
 
         window.clearDevForm = function() {
             document.getElementById('dev-id').value = '';
-            document.getElementById('dev-district').value = '';
+            document.getElementById('dev-district').value = 'Del Perro';
+            document.getElementById('dev-type').value = 'dom';
             document.getElementById('dev-price-min').value = '';
             document.getElementById('dev-price-max').value = '';
             document.getElementById('dev-has-garage').value = 'tak';
-            document.getElementById('dev-garage-capacity').value = '';
+            document.getElementById('dev-closets').value = '';
             document.getElementById('dev-rent').value = '';
             document.getElementById('dev-keys').value = '';
             document.getElementById('dev-notes').value = '';
@@ -2234,24 +2531,24 @@
 
             const defaultProperties = {
                 "init1": { 
-                    title: "Eclipse Towers, Apt 31", location: "Rockford Hills", type: "apartament", price: 1200000, status: "Wolne", 
-                    desc: "Luksusowy penthouse z widokiem na panoramę miasta.", rooms: "3 Pokoje",
-                    hasGarage: true, garageCapacity: 10, rent: 4500, keysAvailable: 2,
+                    title: "Eclipse Towers, Apt 31", location: "Eclipse", type: "apartament", price: 1200000, status: "Wolne", 
+                    desc: "Luksusowy penthouse z widokiem na panoramę miasta.",
+                    hasGarage: true, closets: 4, rent: 4500, keysAvailable: 2,
                     img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80",
                     createdAt: 1700000000000, order: 1700000000000
                 },
                 "init2": { 
                     title: "Willa Vinewood Hills", location: "Vinewood", type: "willa", price: 4500000, status: "Rezerwacja", 
-                    desc: "Ogromna posiadłość z basenem typu infinity.", rooms: "5 Pokoi",
-                    hasGarage: true, garageCapacity: 20, rent: 12000, keysAvailable: 1,
+                    desc: "Ogromna posiadłość z basenem typu infinity.",
+                    hasGarage: true, closets: 8, rent: 12000, keysAvailable: 1,
                     img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
                     createdAt: 1700000001000, order: 1700000001000
                 }
             };
 
             const defaultDevProperties = {
-                "dev1": { district: "Del Perro", priceMin: 150000, priceMax: 250000, hasGarage: false, garageCapacity: 0, rent: 0, keysAvailable: 5, img: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80", notes: "Nowoczesne apartamentowce tuż przy plaży.", createdAt: 1700000000000, order: 1700000000000 },
-                "dev2": { district: "Vinewood Hills", priceMin: 1000000, priceMax: 1200000, hasGarage: true, garageCapacity: 15, rent: 0, keysAvailable: 3, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80", notes: "Stan deweloperski, nowoczesna architektura.", createdAt: 1700000001000, order: 1700000001000 }
+                "dev1": { district: "Del Perro", type: "apartament", priceMin: 150000, priceMax: 250000, hasGarage: false, closets: 2, rent: 0, keysAvailable: 5, img: "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=600&q=80", notes: "Nowoczesne apartamentowce tuż przy plaży.", createdAt: 1700000000000, order: 1700000000000 },
+                "dev2": { district: "Vinewood", type: "willa", priceMin: 1000000, priceMax: 1200000, hasGarage: true, closets: 6, rent: 0, keysAvailable: 3, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80", notes: "Stan deweloperski, nowoczesna architektura.", createdAt: 1700000001000, order: 1700000001000 }
             };
 
             const defaultArrangements = {
@@ -2324,9 +2621,8 @@
                     type: document.getElementById('prop-type').value,
                     price,
                     status: document.getElementById('prop-status').value || "Wolne",
-                    rooms: document.getElementById('prop-rooms').value || "3 Pokoje",
                     hasGarage: document.getElementById('prop-has-garage').value === 'tak',
-                    garageCapacity: parseInt(document.getElementById('prop-garage-capacity').value) || 0,
+                    closets: parseInt(document.getElementById('prop-closets').value) || 0,
                     rent: parseInt(document.getElementById('prop-rent').value) || 0,
                     keysAvailable: parseInt(document.getElementById('prop-keys').value) || 0,
                     img: finalImgString,
@@ -2358,9 +2654,8 @@
                 document.getElementById('prop-type').value = p.type;
                 document.getElementById('prop-price').value = p.price;
                 document.getElementById('prop-status').value = getStatusMeta(p.status).label === 'REZERWACJA' ? 'Rezerwacja' : (getStatusMeta(p.status).label === 'SPRZEDANY' ? 'Sprzedany' : 'Wolne');
-                document.getElementById('prop-rooms').value = p.rooms;
                 document.getElementById('prop-has-garage').value = (p.hasGarage !== undefined ? p.hasGarage : true) ? 'tak' : 'nie';
-                document.getElementById('prop-garage-capacity').value = p.garageCapacity || '';
+                document.getElementById('prop-closets').value = (p.closets !== undefined && p.closets !== null) ? p.closets : '';
                 document.getElementById('prop-rent').value = p.rent || '';
                 document.getElementById('prop-keys').value = (p.keysAvailable !== undefined && p.keysAvailable !== null) ? p.keysAvailable : '';
                 document.getElementById('prop-desc').value = p.desc;
@@ -2412,10 +2707,11 @@
 
                 const payload = {
                     district,
+                    type: document.getElementById('dev-type').value || 'dom',
                     priceMin,
                     priceMax,
                     hasGarage: document.getElementById('dev-has-garage').value === 'tak',
-                    garageCapacity: parseInt(document.getElementById('dev-garage-capacity').value) || 0,
+                    closets: parseInt(document.getElementById('dev-closets').value) || 0,
                     rent: parseInt(document.getElementById('dev-rent').value) || 0,
                     keysAvailable: parseInt(document.getElementById('dev-keys').value) || 0,
                     img: finalImgString,
@@ -2443,10 +2739,11 @@
                 if (!d) return;
                 document.getElementById('dev-id').value = d.id;
                 document.getElementById('dev-district').value = d.district;
+                document.getElementById('dev-type').value = d.type || 'dom';
                 document.getElementById('dev-price-min').value = d.priceMin;
                 document.getElementById('dev-price-max').value = d.priceMax;
                 document.getElementById('dev-has-garage').value = (d.hasGarage !== undefined ? d.hasGarage : true) ? 'tak' : 'nie';
-                document.getElementById('dev-garage-capacity').value = d.garageCapacity || '';
+                document.getElementById('dev-closets').value = (d.closets !== undefined && d.closets !== null) ? d.closets : '';
                 document.getElementById('dev-rent').value = d.rent || '';
                 document.getElementById('dev-keys').value = (d.keysAvailable !== undefined && d.keysAvailable !== null) ? d.keysAvailable : '';
                 document.getElementById('dev-notes').value = d.notes;
