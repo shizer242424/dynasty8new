@@ -141,10 +141,123 @@
         /* --- Refined heading treatment --- */
         .font-display { font-family: 'Playfair Display', serif; }
 
+        /* --- Modal potwierdzenia spotkania: animacja ptaszka --- */
+        #appointment-check-path {
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+        }
+        #appointment-modal.show #appointment-check-path {
+            animation: checkmark-draw 0.5s ease forwards 0.25s;
+        }
+        @keyframes checkmark-draw { to { stroke-dashoffset: 0; } }
+
         @media (prefers-reduced-motion: reduce) {
             .reveal { opacity: 1; transform: none; transition: none; }
             .preloader-mark, .preloader-caption { animation: none; opacity: 1; transform: none; }
             .preloader-line::after { animation: none; }
+        }
+
+        /* --- Przycisk PROMOCJA (hero) --- */
+        .promo-btn {
+            position: relative;
+            background: linear-gradient(90deg, #b91c1c, #D4AF37, #b91c1c);
+            background-size: 220% 100%;
+            animation: promo-pulse 1.8s ease-in-out infinite, promo-gradient-move 3.5s linear infinite;
+        }
+        @keyframes promo-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.55), 0 0 18px 2px rgba(185,28,28,0.35); }
+            50% { box-shadow: 0 0 0 7px rgba(212,175,55,0), 0 0 26px 8px rgba(185,28,28,0.6); }
+        }
+        @keyframes promo-gradient-move {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 220% 50%; }
+        }
+        .promo-badge {
+            position: absolute;
+            top: -10px; right: -10px;
+            background: #b91c1c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            width: 24px; height: 24px;
+            border-radius: 9999px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(185,28,28,0.8);
+            animation: promo-badge-bounce 1s ease-in-out infinite;
+        }
+        @keyframes promo-badge-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-3px) scale(1.15); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .promo-btn, .promo-badge { animation: none; }
+        }
+
+        /* --- Widok Promocja: karta zdrapki --- */
+        #prize-box {
+            width: min(92vw, 480px);
+            height: 300px;
+            box-shadow: 0 25px 60px -15px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.15);
+        }
+        #prize-content {
+            background: radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.08), transparent 60%), linear-gradient(160deg, #1a1a1a, #0a0a0a);
+        }
+        #scratchCanvas { touch-action: none; }
+        #prize-content.revealed { animation: prize-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes prize-pop {
+            0% { transform: scale(0.92); }
+            60% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .code-box { letter-spacing: 0.35em; }
+        .confetti-piece {
+            position: fixed; top: -5%; z-index: 60; pointer-events: none;
+            will-change: transform, opacity;
+            animation: confetti-fall linear forwards;
+        }
+        @keyframes confetti-fall {
+            to { transform: translateY(110vh) rotate(var(--rot, 360deg)); opacity: 0; }
+        }
+        .step-num { font-family: 'Playfair Display', serif; color: #D4AF37; }
+        .copy-btn { transition: all 0.2s ease; }
+        .copy-btn.copied { background-color: #16a34a !important; color: white !important; }
+
+        /* --- Animacja wejścia na widok Promocja --- */
+        .promo-in {
+            opacity: 0;
+            transform: translateY(22px) scale(0.98);
+            animation: promo-in-anim 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .promo-in-1 { animation-delay: 0.05s; }
+        .promo-in-2 { animation-delay: 0.15s; }
+        .promo-in-3 { animation-delay: 0.28s; }
+        .promo-in-4 { animation-delay: 0.4s; }
+        .promo-in-5 { animation-delay: 0.55s; }
+        @keyframes promo-in-anim {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        #prize-box.promo-in {
+            animation-name: promo-in-anim, prize-box-glow-in;
+        }
+        @keyframes prize-box-glow-in {
+            0% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+            60% { box-shadow: 0 0 40px 8px rgba(212,175,55,0.35); }
+            100% { box-shadow: 0 25px 60px -15px rgba(212,175,55,0.25), 0 0 0 1px rgba(212,175,55,0.15); }
+        }
+
+        /* --- Konfetti powitalne na cały ekran --- */
+        .promo-entrance-confetti {
+            position: fixed;
+            top: -5%;
+            z-index: 60;
+            pointer-events: none;
+            will-change: transform, opacity;
+            animation: confetti-fall linear forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #prize-content.revealed, .confetti-piece, .promo-entrance-confetti { animation: none; }
+            .promo-in { opacity: 1; transform: none; animation: none; }
         }
     </style>
 </head>
@@ -352,10 +465,9 @@
                 <button onclick="showView('main'); setTimeout(() => document.getElementById('interiors').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Aranżacje</button>
                 <button onclick="showView('main'); setTimeout(() => document.getElementById('calculator').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Kredyty</button>
                 <button onclick="showView('main'); setTimeout(() => document.getElementById('agents').scrollIntoView({behavior: 'smooth'}), 100)" class="hover:text-d8gold transition-all duration-300">Agenci</button>
-                <a href="#admin-section" class="text-zinc-500 hover:text-d8gold transition-all duration-300">⚙ Panel Admina</a>
             </div>
             <div>
-                <button onclick="showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 100)" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark px-5 py-2.5 rounded text-sm font-bold tracking-wide transition-all duration-300 uppercase shadow-lg block">Zgłoś Ofertę</button>
+                <button onclick="showView('main'); setTimeout(() => document.getElementById('contact').scrollIntoView({behavior: 'smooth'}), 100)" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark px-5 py-2.5 rounded text-sm font-bold tracking-wide transition-all duration-300 uppercase shadow-lg block">Umów Spotkanie!</button>
             </div>
         </div>
     </nav>
@@ -366,9 +478,13 @@
                 <span class="text-d8gold font-semibold tracking-widest text-xs uppercase bg-d8gold/10 px-3 py-1 rounded-full border border-d8gold/20">Twoje cztery ściany</span>
                 <h1 class="font-display text-4xl md:text-6xl font-bold tracking-tight mt-6 mb-6 leading-tight">Znajdź Swoje Miejsce <br>w <span class="text-d8gold italic">Los Santos</span></h1>
                 <p class="text-zinc-400 text-lg max-w-2xl mx-auto">Ekskluzywne apartamenty, luksusowe wille oraz małe, przytulne mieszkania. Zamieszkaj tam, gdzie komfort spotyka się z najwyższym standardem życia.</p>
-                <div class="mt-8">
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button onclick="showView('all-properties')" class="btn-shimmer bg-d8gold hover:bg-d8golddark text-d8dark font-bold px-8 py-3.5 rounded text-sm tracking-wide transition-all uppercase shadow-lg shadow-d8gold/20">
                         Przeglądaj pełną ofertę
+                    </button>
+                    <button onclick="showView('promocja')" class="promo-btn text-white font-extrabold px-8 py-3.5 rounded text-sm tracking-wide uppercase shadow-lg inline-block">
+                        <span class="promo-badge">!</span>
+                        ZDRAPKA
                     </button>
                 </div>
             </div>
@@ -564,18 +680,93 @@
         <section id="contact" class="py-20 bg-zinc-950 border-t border-zinc-900">
             <div class="max-w-3xl mx-auto px-4">
                 <div class="text-center mb-12">
-                    <h2 class="font-display text-3xl md:text-4xl font-bold">Skontaktuj Się z Nami</h2>
+                    <span class="text-d8gold text-sm font-semibold uppercase tracking-wider block mb-1">Rezerwacja terminu</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold">Umów Spotkanie</h2>
+                    <p class="text-zinc-500 text-sm mt-3 max-w-xl mx-auto">Wypełnij formularz, a nasz agent skontaktuje się z Tobą, aby potwierdzić szczegóły wizyty.</p>
                 </div>
-                <form class="reveal bg-d8card p-8 rounded-xl border border-zinc-800 space-y-6">
+                <form id="appointment-form" class="reveal bg-d8card p-8 rounded-xl border border-zinc-800 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="text" placeholder="Imię i Nazwisko " class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
-                        <input type="text" placeholder="Numer Telefonu" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Imię i Nazwisko</label>
+                            <input type="text" id="appt-name" placeholder="np. Drex Reeve" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Numer Telefonu</label>
+                            <input type="text" id="appt-phone" placeholder="np. 555-0123" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        </div>
                     </div>
-                    <textarea rows="4" placeholder="Treść wiadomości..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold"></textarea>
-                    <button type="button" class="btn-shimmer w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 rounded uppercase text-sm tracking-wider">Wyślij Zgłoszenie</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Adres Nieruchomości</label>
+                            <input type="text" id="appt-address" placeholder="np. Vinewood Hills 12" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Preferowana Godzina Spotkania</label>
+                            <input type="time" id="appt-time" class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold [color-scheme:dark]">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Cel Spotkania <span class="normal-case text-zinc-600 font-normal">(zaznacz jedną lub więcej opcji)</span></label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <label class="appt-goal-chip flex items-center gap-2.5 bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 cursor-pointer hover:border-zinc-500 transition-all duration-300">
+                                <input type="checkbox" class="appt-goal sr-only" value="Sprzedaż" onchange="toggleGoalChip(this)">
+                                <span class="goal-check w-5 h-5 rounded-md border-2 border-zinc-600 flex items-center justify-center shrink-0 transition-all duration-300">
+                                    <svg class="w-3 h-3 text-d8dark opacity-0 transition-opacity duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span>Sprzedaż</span>
+                            </label>
+                            <label class="appt-goal-chip flex items-center gap-2.5 bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 cursor-pointer hover:border-zinc-500 transition-all duration-300">
+                                <input type="checkbox" class="appt-goal sr-only" value="Kupno" onchange="toggleGoalChip(this)">
+                                <span class="goal-check w-5 h-5 rounded-md border-2 border-zinc-600 flex items-center justify-center shrink-0 transition-all duration-300">
+                                    <svg class="w-3 h-3 text-d8dark opacity-0 transition-opacity duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span>Kupno</span>
+                            </label>
+                            <label class="appt-goal-chip flex items-center gap-2.5 bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 cursor-pointer hover:border-zinc-500 transition-all duration-300">
+                                <input type="checkbox" class="appt-goal sr-only" value="Aranżacja wnętrza" onchange="toggleGoalChip(this)">
+                                <span class="goal-check w-5 h-5 rounded-md border-2 border-zinc-600 flex items-center justify-center shrink-0 transition-all duration-300">
+                                    <svg class="w-3 h-3 text-d8dark opacity-0 transition-opacity duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span>Aranżacja wnętrza</span>
+                            </label>
+                            <label class="appt-goal-chip flex items-center gap-2.5 bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 cursor-pointer hover:border-zinc-500 transition-all duration-300">
+                                <input type="checkbox" class="appt-goal sr-only" value="Inne" onchange="toggleGoalChip(this)">
+                                <span class="goal-check w-5 h-5 rounded-md border-2 border-zinc-600 flex items-center justify-center shrink-0 transition-all duration-300">
+                                    <svg class="w-3 h-3 text-d8dark opacity-0 transition-opacity duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span>Inne</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Dodatkowe Informacje <span class="normal-case text-zinc-600 font-normal">(opcjonalnie)</span></label>
+                        <textarea rows="4" id="appt-message" placeholder="Np. szczegóły dotyczące nieruchomości, dogodne dni, dodatkowe pytania..." class="w-full bg-zinc-900 border border-zinc-700 rounded p-3 text-sm text-white focus:outline-none focus:border-d8gold"></textarea>
+                    </div>
+                    <p id="appt-error" class="hidden text-xs text-red-500 font-medium text-center">Uzupełnij Imię i Nazwisko, Numer Telefonu oraz preferowaną godzinę spotkania.</p>
+                    <button type="button" onclick="submitAppointment()" class="btn-shimmer w-full bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-3 rounded uppercase text-sm tracking-wider">Umów Spotkanie</button>
                 </form>
             </div>
         </section>
+    </div>
+
+    <!-- Modal potwierdzenia umówienia spotkania -->
+    <div id="appointment-modal" class="hidden fixed inset-0 z-[9998] flex items-center justify-center p-4">
+        <div id="appointment-modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300 ease-out"></div>
+        <div id="appointment-modal-card" class="relative bg-d8card border border-d8gold/40 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl scale-90 opacity-0 transition-all duration-300 ease-out">
+            <div class="w-16 h-16 rounded-full bg-d8gold/10 border-2 border-d8gold flex items-center justify-center mx-auto mb-5">
+                <svg id="appointment-check-icon" class="w-8 h-8 text-d8gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path id="appointment-check-path" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold mb-4">Wizyta została umówiona!</h3>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-5 text-left space-y-2.5 text-sm">
+                <div class="flex justify-between gap-3"><span class="text-zinc-500">Imię i Nazwisko</span><span id="summary-name" class="font-semibold text-white text-right">—</span></div>
+                <div class="flex justify-between gap-3"><span class="text-zinc-500">Numer Telefonu</span><span id="summary-phone" class="font-semibold text-white text-right">—</span></div>
+                <div class="flex justify-between gap-3"><span class="text-zinc-500">Godzina Spotkania</span><span id="summary-time" class="font-semibold text-d8gold text-right">—</span></div>
+            </div>
+            <p class="text-zinc-400 text-sm mb-6">Dziękujemy za zgłoszenie. Nasz agent skontaktuje się z Tobą tak szybko, jak to możliwe, aby potwierdzić szczegóły spotkania.</p>
+            <button onclick="closeAppointmentModal()" class="bg-d8gold hover:bg-d8golddark text-d8dark font-bold py-2.5 px-8 rounded uppercase text-xs tracking-wider transition-all duration-300">Zamknij</button>
+        </div>
     </div>
 
     <div id="view-all-properties" class="view-section hidden pt-24 min-h-screen">
@@ -655,19 +846,71 @@
         </div>
     </div>
 
-    <section id="admin-section" class="py-20 bg-zinc-900 border-t-2 border-d8gold/30">
-        <div class="max-w-7xl mx-auto px-4">
+    <div id="view-promocja" class="view-section hidden pt-24 min-h-screen">
+        <section class="glow-accent px-4 pb-6">
+            <div class="max-w-3xl mx-auto text-center pt-6">
+                <button onclick="showView('main')" class="text-xs text-d8gold hover:underline uppercase tracking-widest flex items-center gap-1 mb-6 justify-center">← Powrót do Strony Głównej</button>
+                <span class="promo-in promo-in-1 text-d8gold font-semibold text-xs uppercase bg-d8gold/10 px-3 py-1 rounded-full border border-d8gold/20 inline-block" style="letter-spacing:0.35em">Oferta ograniczona czasowo</span>
+                <h1 class="promo-in promo-in-2 font-display text-4xl md:text-5xl font-bold tracking-tight mt-6 mb-4 leading-tight">
+                    Twoja osobista <span class="text-d8gold italic">zniżka</span> czeka
+                </h1>
+                <p class="promo-in promo-in-3 text-zinc-400 text-base md:text-lg max-w-xl mx-auto">
+                    Zdrap poniższą kartę i odbierz swój indywidualny kod rabatowy na nieruchomość z oferty Dynasty 8.
+                </p>
+            </div>
+        </section>
+
+        <section class="max-w-3xl mx-auto px-4 pb-10">
+            <div class="promo-in promo-in-4 bg-d8card/80 border border-zinc-800 rounded-xl p-6 md:p-8 grid gap-6 md:grid-cols-3">
+                <div class="flex gap-4 md:flex-col md:gap-2 md:items-start">
+                    <span class="step-num text-2xl font-bold shrink-0">01</span>
+                    <p class="text-sm text-zinc-300 leading-relaxed">Zdrap kartę myszką lub palcem, aż odsłoni się cała powierzchnia.</p>
+                </div>
+                <div class="flex gap-4 md:flex-col md:gap-2 md:items-start">
+                    <span class="step-num text-2xl font-bold shrink-0">02</span>
+                    <p class="text-sm text-zinc-300 leading-relaxed">Odkryjesz swoją zniżkę (od <strong class="text-white">-10%</strong> do <strong class="text-white">-20%</strong>) oraz unikalny 4-cyfrowy kod.</p>
+                </div>
+                <div class="flex gap-4 md:flex-col md:gap-2 md:items-start">
+                    <span class="step-num text-2xl font-bold shrink-0">03</span>
+                    <p class="text-sm text-zinc-300 leading-relaxed">Podaj kod naszemu agentowi przy umawianiu spotkania, aby skorzystać ze zniżki.</p>
+                </div>
+            </div>
+            <p class="promo-in promo-in-4 text-center text-xs text-zinc-500 mt-4">Kod jest jednorazowy i przypisany wyłącznie do Ciebie — nie udostępniaj go innym osobom.</p>
+        </section>
+
+        <section class="pb-24 px-4">
+            <div id="prize-box" class="promo-in promo-in-5 relative mx-auto rounded-2xl">
+                <div id="prize-content" class="absolute inset-0 rounded-2xl border-2 border-d8gold/60 flex flex-col items-center justify-center gap-1 p-4 overflow-hidden">
+                    <span class="text-zinc-500 text-[11px] uppercase tracking-[0.3em]">Twoja zniżka</span>
+                    <span id="prize-percent" class="font-display text-6xl font-bold text-d8gold leading-none">&nbsp;</span>
+                    <span class="text-zinc-500 text-[11px] uppercase tracking-[0.3em] mt-3">Kod rabatowy</span>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span id="prize-code" class="font-display code-box text-3xl font-bold text-white">&nbsp;</span>
+                        <button id="copy-code-btn" onclick="window.copyPromoCode()" class="copy-btn hidden bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-2 rounded">Kopiuj</button>
+                    </div>
+                    <span class="text-zinc-600 text-[10px] mt-3">Gratulacje! Zachowaj ten kod.</span>
+                </div>
+                <canvas id="scratchCanvas" class="absolute inset-0 rounded-2xl cursor-pointer w-full h-full"></canvas>
+            </div>
+            <p id="scratch-status" class="promo-in promo-in-5 text-center text-zinc-500 text-xs uppercase tracking-widest mt-5">Przeciągnij palcem lub myszką po karcie, aby zdrapać</p>
+        </section>
+    </div>
+
+    <!-- Panel admina: ukryty modal, otwierany wyłącznie przez mały link w prawym dolnym rogu (patrz "admin-fab" przed </body>) -->
+    <div id="admin-section" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm overflow-y-auto py-10 px-4" onclick="if(event.target === this) closeAdminModal()">
+        <div class="max-w-7xl mx-auto bg-d8dark border border-zinc-800 rounded-2xl relative p-6 sm:p-8">
+            <button onclick="closeAdminModal()" aria-label="Zamknij panel admina" class="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full bg-zinc-800 hover:bg-red-800 text-zinc-300 hover:text-white transition-all">✕</button>
+
             <div class="text-center mb-8">
                 <span class="text-xs font-mono uppercase bg-zinc-800 text-zinc-400 px-3 py-1 rounded border border-zinc-700">Firebase Realtime Database LIVE CMS</span>
                 <h2 class="text-2xl font-bold mt-2">⚙ Panel Zarządzania Dynasty 8</h2>
             </div>
 
             <div id="admin-login-box" class="max-w-md mx-auto bg-d8card p-6 rounded-xl border border-zinc-800 shadow-xl">
-                <p class="text-xs text-zinc-400 mb-4 text-center">Dane logowania: admin / admin123</p>
                 <div class="space-y-4">
-                    <input type="text" id="admin-user" placeholder="Login" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
-                    <input type="password" id="admin-pass" placeholder="Hasło" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
-                    <button onclick="handleAdminLogin()" class="w-full bg-zinc-800 hover:bg-d8gold hover:text-d8dark text-white font-bold py-2.5 rounded text-sm">Zaloguj się</button>
+                    <input type="email" id="admin-user" autocomplete="username" placeholder="Adres e-mail" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
+                    <input type="password" id="admin-pass" autocomplete="current-password" placeholder="Hasło" class="w-full bg-zinc-900 border border-zinc-700 rounded p-2.5 text-sm text-white">
+                    <button id="admin-login-btn" onclick="handleAdminLogin()" class="w-full bg-zinc-800 hover:bg-d8gold hover:text-d8dark text-white font-bold py-2.5 rounded text-sm">Zaloguj się</button>
                     <p id="login-error" class="text-xs text-red-500 hidden text-center font-medium mt-2">Niepoprawny login lub hasło!</p>
                 </div>
             </div>
@@ -831,11 +1074,14 @@
 
             </div>
         </div>
-    </section>
+    </div>
 
     <footer class="border-t border-zinc-900 py-8 bg-d8dark text-center text-xs text-zinc-500">
         <p>&copy; 2026 Dynasty 8 Real Estate. Wszelkie prawa zastrzeżone. Projekt na potrzeby Roleplay (GTA V).</p>
     </footer>
+
+    <!-- Mały, dyskretny link otwierający panel admina -->
+    <a href="#" id="admin-fab" onclick="openAdminModal(); return false;" class="fixed bottom-3 right-3 z-40 text-[10px] tracking-widest uppercase text-zinc-700 hover:text-d8gold transition-all duration-300">Panel Admina</a>
 
     <script>
         let loadedNormalProperties = [];
@@ -981,6 +1227,10 @@
             } else if(viewName === 'arrangements') {
                 document.getElementById('view-arrangements').classList.remove('hidden');
                 window.scrollTo({top: 0, behavior: 'instant'});
+            } else if(viewName === 'promocja') {
+                document.getElementById('view-promocja').classList.remove('hidden');
+                window.scrollTo({top: 0, behavior: 'instant'});
+                if (window.enterPromoView) window.enterPromoView();
             }
         }
 
@@ -1660,20 +1910,56 @@
             document.getElementById('weeklyPayment').innerText = '$' + Math.round(weeklyPayment).toLocaleString();
         }
 
+        // Otwieranie / zamykanie modala panelu admina (sam formularz logowania/panel
+        // pokazuje się dopiero po kliknięciu w mały link "Panel Admina" w rogu strony)
+        window.openAdminModal = function() {
+            document.getElementById('admin-section').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        };
+        window.closeAdminModal = function() {
+            document.getElementById('admin-section').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        };
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') window.closeAdminModal();
+        });
+
+        // Logowanie odbywa się przez Firebase Authentication (window.adminSignIn
+        // jest zdefiniowane w module Firebase niżej) — hasło NIE jest nigdzie
+        // zapisane w tym pliku ani porównywane po stronie klienta.
         function handleAdminLogin() {
-            if (document.getElementById('admin-user').value === 'admin' && document.getElementById('admin-pass').value === 'admin123') {
-                document.getElementById('admin-login-box').classList.add('hidden');
-                document.getElementById('admin-panel-box').classList.remove('hidden');
-                document.getElementById('login-error').classList.add('hidden');
-                if(typeof window.getLiveProperties === 'function') window.renderAdminList(window.getLiveProperties());
-                if(typeof window.getLiveDevProperties === 'function') window.renderAdminDevList(window.getLiveDevProperties());
-                if(typeof window.getLiveArrangements === 'function') window.renderAdminArrList(window.getLiveArrangements());
-            } else { document.getElementById('login-error').classList.remove('hidden'); }
+            const email = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            const btn = document.getElementById('admin-login-btn');
+            const errorEl = document.getElementById('login-error');
+            errorEl.classList.add('hidden');
+
+            if (!email || !pass) {
+                errorEl.textContent = 'Podaj adres e-mail i hasło.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (typeof window.adminSignIn !== 'function') {
+                errorEl.textContent = 'Logowanie niedostępne — sprawdź konfigurację Firebase.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Logowanie...';
+            window.adminSignIn(email, pass)
+                .catch(function() {
+                    errorEl.textContent = 'Niepoprawny e-mail lub hasło!';
+                    errorEl.classList.remove('hidden');
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Zaloguj się';
+                });
         }
 
         function handleAdminLogout() {
-            document.getElementById('admin-login-box').classList.remove('hidden');
-            document.getElementById('admin-panel-box').classList.add('hidden');
+            if (typeof window.adminSignOut === 'function') window.adminSignOut();
             window.clearForm();
             window.clearDevForm();
             window.clearArrForm();
@@ -1745,7 +2031,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBPyV3qm5ZbaUAiKKHjKWXWJJ9JTIB_scw",
@@ -1763,6 +2050,38 @@
         } else {
             const app = initializeApp(firebaseConfig);
             const db = getDatabase(app);
+
+            // --- Panel admina: logowanie przez Firebase Authentication ---
+            // Hasło administratora nie jest zapisane nigdzie w tym pliku ani w JS —
+            // weryfikuje je serwer Firebase. Konto admina zakłada się w konsoli
+            // Firebase (Authentication -> Users -> Add user), nie w kodzie strony.
+            const auth = getAuth(app);
+            setPersistence(auth, browserSessionPersistence).catch(() => {});
+
+            window.adminSignIn = function(email, password) {
+                return signInWithEmailAndPassword(auth, email, password);
+            };
+            window.adminSignOut = function() {
+                return signOut(auth);
+            };
+
+            onAuthStateChanged(auth, function(user) {
+                const loginBox = document.getElementById('admin-login-box');
+                const panelBox = document.getElementById('admin-panel-box');
+                if (!loginBox || !panelBox) return;
+                if (user) {
+                    loginBox.classList.add('hidden');
+                    panelBox.classList.remove('hidden');
+                    if (typeof window.getLiveProperties === 'function') window.renderAdminList(window.getLiveProperties());
+                    if (typeof window.getLiveDevProperties === 'function') window.renderAdminDevList(window.getLiveDevProperties());
+                    if (typeof window.getLiveArrangements === 'function') window.renderAdminArrList(window.getLiveArrangements());
+                } else {
+                    loginBox.classList.remove('hidden');
+                    panelBox.classList.add('hidden');
+                    document.getElementById('admin-pass').value = '';
+                }
+            });
+
             const dbRef = ref(db, 'properties');
             const devRef = ref(db, 'developer_properties');
             const arrRef = ref(db, 'arrangements');
@@ -2126,7 +2445,445 @@
             window.getLiveProperties = () => currentProperties;
             window.getLiveDevProperties = () => currentDevProperties;
             window.getLiveArrangements = () => currentArrangements;
+
+            // --- Limit "1 zdrapka na 1 IP" dla widoku Promocja ---
+            window.promoCheckClaim = async function(ipKey) {
+                try {
+                    const snap = await get(ref(db, `promo_scratches/${ipKey}`));
+                    return snap.exists() ? snap.val() : null;
+                } catch (err) {
+                    console.error('Błąd sprawdzania limitu promocji:', err);
+                    return undefined; // undefined = nieznany błąd (odróżniamy od null = brak zapisu)
+                }
+            };
+            window.promoSaveClaim = function(ipKey, data) {
+                set(ref(db, `promo_scratches/${ipKey}`), data).catch(err => console.error('Błąd zapisu limitu promocji:', err));
+            };
         }
+    </script>
+
+    <script>
+        // ====================================================================
+        // Formularz "Umów Spotkanie" — webhook Discord + modal potwierdzenia
+        // ====================================================================
+
+        // 👉 Wklej tutaj URL swojego webhooka Discord (Ustawienia kanału -> Integracje -> Webhooki)
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1522970263631822890/UfcV8vz362Mrc1gFk_bvva1TdNRoNUa4-PJ6lFLo4S46DttGY8YlvgfYOa_nv3XeYRA-";
+
+        window.toggleGoalChip = function (checkbox) {
+            const label = checkbox.closest('.appt-goal-chip');
+            const checkBox = label.querySelector('.goal-check');
+            const icon = checkBox.querySelector('svg');
+            if (checkbox.checked) {
+                label.classList.remove('border-zinc-700');
+                label.classList.add('border-d8gold', 'bg-d8gold/10', 'text-white');
+                checkBox.classList.remove('border-zinc-600');
+                checkBox.classList.add('border-d8gold', 'bg-d8gold');
+                icon.classList.remove('opacity-0');
+                icon.classList.add('opacity-100');
+            } else {
+                label.classList.add('border-zinc-700');
+                label.classList.remove('border-d8gold', 'bg-d8gold/10', 'text-white');
+                checkBox.classList.add('border-zinc-600');
+                checkBox.classList.remove('border-d8gold', 'bg-d8gold');
+                icon.classList.add('opacity-0');
+                icon.classList.remove('opacity-100');
+            }
+        };
+
+        window.submitAppointment = function () {
+            const nameEl = document.getElementById('appt-name');
+            const phoneEl = document.getElementById('appt-phone');
+            const addressEl = document.getElementById('appt-address');
+            const timeEl = document.getElementById('appt-time');
+            const messageEl = document.getElementById('appt-message');
+            const errorEl = document.getElementById('appt-error');
+
+            const name = nameEl.value.trim();
+            const phone = phoneEl.value.trim();
+            const address = addressEl.value.trim();
+            const time = timeEl.value;
+            const message = messageEl.value.trim();
+            const goals = Array.from(document.querySelectorAll('.appt-goal:checked')).map(cb => cb.value);
+
+            if (!name || !phone || !time) {
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            errorEl.classList.add('hidden');
+
+            const payload = {
+                embeds: [{
+                    title: "📅 Nowe zgłoszenie spotkania - Dynasty 8",
+                    color: 0xD4AF37,
+                    fields: [
+                        { name: "Imię i Nazwisko", value: name, inline: true },
+                        { name: "Numer Telefonu", value: phone, inline: true },
+                        { name: "Preferowana godzina", value: time, inline: true },
+                        { name: "Adres nieruchomości", value: address || "Nie podano", inline: false },
+                        { name: "Cel spotkania", value: goals.length ? goals.join(', ') : "Nie wybrano", inline: false },
+                        { name: "Dodatkowe informacje", value: message || "Brak", inline: false }
+                    ],
+                    footer: { text: "Dynasty 8" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            if (DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("WKLEJ_TUTAJ")) {
+                fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error('Błąd wysyłki zgłoszenia na Discorda:', err));
+            } else {
+                console.warn('Discord webhook URL nie został ustawiony — zgłoszenie nie zostało wysłane na Discorda.');
+            }
+
+            document.getElementById('summary-name').textContent = name;
+            document.getElementById('summary-phone').textContent = phone;
+            document.getElementById('summary-time').textContent = time;
+
+            document.getElementById('appointment-form').reset();
+            document.querySelectorAll('.appt-goal-chip').forEach(label => {
+                label.classList.add('border-zinc-700');
+                label.classList.remove('border-d8gold', 'bg-d8gold/10', 'text-white');
+                const checkBox = label.querySelector('.goal-check');
+                checkBox.classList.add('border-zinc-600');
+                checkBox.classList.remove('border-d8gold', 'bg-d8gold');
+                checkBox.querySelector('svg').classList.add('opacity-0');
+                checkBox.querySelector('svg').classList.remove('opacity-100');
+            });
+
+            window.openAppointmentModal();
+        };
+
+        window.openAppointmentModal = function () {
+            const modal = document.getElementById('appointment-modal');
+            const backdrop = document.getElementById('appointment-modal-backdrop');
+            const card = document.getElementById('appointment-modal-card');
+
+            modal.classList.remove('hidden');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'hidden';
+
+            // wymuszenie reflow, aby animacja ptaszka odpaliła się od nowa przy każdym otwarciu
+            void modal.offsetWidth;
+
+            requestAnimationFrame(() => {
+                backdrop.style.opacity = '1';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+                modal.classList.add('show');
+            });
+        };
+
+        window.closeAppointmentModal = function () {
+            const modal = document.getElementById('appointment-modal');
+            const backdrop = document.getElementById('appointment-modal-backdrop');
+            const card = document.getElementById('appointment-modal-card');
+
+            backdrop.style.opacity = '0';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
+        // Kliknięcie w ciemne tło zamyka modal
+        document.addEventListener('DOMContentLoaded', function () {
+            const backdrop = document.getElementById('appointment-modal-backdrop');
+            if (backdrop) backdrop.addEventListener('click', window.closeAppointmentModal);
+        });
+    </script>
+
+    <script>
+        // ====================================================================
+        // Zdrapka promocyjna — losowa zniżka + kod, webhook Discord po odsłonięciu
+        // (używa tej samej stałej DISCORD_WEBHOOK_URL zdefiniowanej wyżej)
+        // ====================================================================
+
+        let promoPercent = null;
+        let promoCode = null;
+        let promoWebhookSent = false;
+        let promoRevealed = false;
+        let promoInitialized = false;
+        let promoWidth = 0, promoHeight = 0, promoLastPoint = null, promoScratching = false, promoCheckCounter = 0;
+        let promoCanvas, promoCtx, promoBox;
+
+        function sendPromoScratchWebhook() {
+            if (promoWebhookSent) return;
+            promoWebhookSent = true;
+
+            const payload = {
+                embeds: [{
+                    title: "🎉 Zdrapka odsłonięta - Dynasty 8",
+                    color: 0xD4AF37,
+                    fields: [
+                        { name: "Kod rabatowy", value: promoCode, inline: true },
+                        { name: "Zniżka", value: `-${promoPercent}%`, inline: true }
+                    ],
+                    footer: { text: "Dynasty 8 · Promocja" },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            if (typeof DISCORD_WEBHOOK_URL !== 'undefined' && DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("WKLEJ_TUTAJ")) {
+                fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error('Błąd wysyłki zgłoszenia zdrapki na Discorda:', err));
+            } else {
+                console.warn('Discord webhook URL nie został ustawiony — zgłoszenie zdrapki nie zostało wysłane.');
+            }
+        }
+
+        window.copyPromoCode = function () {
+            navigator.clipboard.writeText(promoCode).then(() => {
+                const btn = document.getElementById('copy-code-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Skopiowano!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+            }).catch(() => {});
+        };
+
+        function promoDrawFoil() {
+            const rect = promoBox.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            promoWidth = rect.width; promoHeight = rect.height;
+            promoCanvas.width = promoWidth * dpr;
+            promoCanvas.height = promoHeight * dpr;
+            promoCanvas.style.width = promoWidth + 'px';
+            promoCanvas.style.height = promoHeight + 'px';
+            promoCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const grad = promoCtx.createLinearGradient(0, 0, promoWidth, promoHeight);
+            grad.addColorStop(0, '#3a3220');
+            grad.addColorStop(0.25, '#D4AF37');
+            grad.addColorStop(0.5, '#f5e29b');
+            grad.addColorStop(0.75, '#D4AF37');
+            grad.addColorStop(1, '#7a6420');
+            promoCtx.fillStyle = grad;
+            promoCtx.fillRect(0, 0, promoWidth, promoHeight);
+
+            promoCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+            promoCtx.lineWidth = 2;
+            for (let x = -promoHeight; x < promoWidth; x += 14) {
+                promoCtx.beginPath();
+                promoCtx.moveTo(x, promoHeight);
+                promoCtx.lineTo(x + promoHeight, 0);
+                promoCtx.stroke();
+            }
+            promoCtx.fillStyle = 'rgba(0,0,0,0.12)';
+            promoCtx.fillRect(0, 0, promoWidth, promoHeight);
+
+            promoCtx.textAlign = 'center';
+            promoCtx.textBaseline = 'middle';
+            promoCtx.fillStyle = 'rgba(17,17,17,0.85)';
+            promoCtx.font = `700 ${Math.round(promoHeight * 0.13)}px 'Playfair Display', serif`;
+            promoCtx.fillText('DYNASTY 8', promoWidth / 2, promoHeight / 2 - 14);
+
+            promoCtx.font = `600 ${Math.round(promoHeight * 0.045)}px Inter, sans-serif`;
+            promoCtx.fillStyle = 'rgba(17,17,17,0.65)';
+            promoCtx.fillText('PRZECIĄGNIJ, ABY ZDRAPAĆ', promoWidth / 2, promoHeight / 2 + 34);
+
+            promoCtx.globalCompositeOperation = 'source-over';
+        }
+
+        function promoGetPoint(e) {
+            const rect = promoCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function promoScratchAt(p) {
+            promoCtx.globalCompositeOperation = 'destination-out';
+            promoCtx.lineCap = 'round';
+            promoCtx.lineJoin = 'round';
+            promoCtx.lineWidth = Math.max(promoWidth, promoHeight) * 0.11;
+            promoCtx.beginPath();
+            if (promoLastPoint) {
+                promoCtx.moveTo(promoLastPoint.x, promoLastPoint.y);
+                promoCtx.lineTo(p.x, p.y);
+            } else {
+                promoCtx.moveTo(p.x, p.y);
+                promoCtx.lineTo(p.x + 0.1, p.y + 0.1);
+            }
+            promoCtx.stroke();
+            promoLastPoint = p;
+        }
+
+        function promoCheckProgress() {
+            promoCheckCounter++;
+            if (promoCheckCounter % 6 !== 0) return;
+            const imgData = promoCtx.getImageData(0, 0, promoCanvas.width, promoCanvas.height).data;
+            let transparent = 0, total = 0;
+            const step = 32;
+            for (let i = 3; i < imgData.length; i += step) {
+                total++;
+                if (imgData[i] < 60) transparent++;
+            }
+            if (transparent / total > 0.30) promoReveal();
+        }
+
+        let promoIpKey = null;
+
+        function promoReveal() {
+            if (promoRevealed) return;
+            promoRevealed = true;
+            promoCanvas.style.transition = 'opacity 0.5s ease';
+            promoCanvas.style.opacity = '0';
+            document.getElementById('scratch-status').textContent = '🎉 Gratulacje! Twoja zniżka i kod czekają poniżej.';
+            document.getElementById('prize-content').classList.add('revealed');
+            document.getElementById('copy-code-btn').classList.remove('hidden');
+            setTimeout(() => { promoCanvas.style.display = 'none'; }, 550);
+            promoLaunchConfetti();
+            sendPromoScratchWebhook();
+            if (promoIpKey && window.promoSaveClaim) {
+                window.promoSaveClaim(promoIpKey, { code: promoCode, percent: promoPercent, timestamp: Date.now() });
+            }
+        }
+
+        // Konfetti na cały ekran przy wejściu na stronę Promocji (efekt "wow" powitania)
+        window.promoEntranceConfetti = function () {
+            const colors = ['#D4AF37', '#f5e29b', '#ffffff', '#AA8811', '#b91c1c'];
+            const count = 90;
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'promo-entrance-confetti';
+                const size = 5 + Math.random() * 8;
+                piece.style.left = (Math.random() * window.innerWidth) + 'px';
+                piece.style.width = size + 'px';
+                piece.style.height = size * (Math.random() > 0.5 ? 1 : 2.2) + 'px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.setProperty('--rot', (360 + Math.random() * 360) + 'deg');
+                piece.style.animationDuration = (2 + Math.random() * 1.8) + 's';
+                piece.style.animationDelay = (Math.random() * 0.5) + 's';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 4800);
+            }
+        };
+
+        function promoLaunchConfetti() {
+            const colors = ['#D4AF37', '#f5e29b', '#ffffff', '#AA8811'];
+            const rect = promoBox.getBoundingClientRect();
+            for (let i = 0; i < 40; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                const size = 5 + Math.random() * 6;
+                piece.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                piece.style.width = size + 'px';
+                piece.style.height = size * (Math.random() > 0.5 ? 1 : 2.2) + 'px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.setProperty('--rot', (360 + Math.random() * 360) + 'deg');
+                piece.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 3400);
+            }
+        }
+
+        function promoStartScratch(e) {
+            if (promoRevealed) return;
+            promoScratching = true; promoLastPoint = null;
+            promoScratchAt(promoGetPoint(e)); promoCheckProgress();
+            e.preventDefault();
+        }
+        function promoMoveScratch(e) {
+            if (!promoScratching || promoRevealed) return;
+            promoScratchAt(promoGetPoint(e)); promoCheckProgress();
+            e.preventDefault();
+        }
+        function promoEndScratch() { promoScratching = false; promoLastPoint = null; }
+
+        function promoShowLockedState(claim) {
+            promoRevealed = true;
+            promoCode = claim.code;
+            promoPercent = claim.percent;
+            document.getElementById('prize-percent').textContent = `-${claim.percent}%`;
+            document.getElementById('prize-code').textContent = claim.code;
+            document.getElementById('copy-code-btn').classList.remove('hidden');
+            document.getElementById('prize-content').classList.remove('revealed');
+            const canvas = document.getElementById('scratchCanvas');
+            if (canvas) canvas.style.display = 'none';
+            const statusEl = document.getElementById('scratch-status');
+            if (statusEl) statusEl.textContent = 'Ta promocja została już wykorzystana z Twojej sieci — to Twój wcześniej odsłonięty kod.';
+        }
+
+        // Sprawdza limit "1 zdrapka na IP" (Firebase), a następnie inicjalizuje widok
+        window.enterPromoView = async function () {
+            if (window.promoEntranceConfetti) window.promoEntranceConfetti();
+
+            const statusEl = document.getElementById('scratch-status');
+            if (statusEl) statusEl.textContent = 'Sprawdzanie dostępności promocji…';
+
+            let ipKey = null;
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                ipKey = (data.ip || '').replace(/[^a-zA-Z0-9]/g, '_');
+            } catch (err) {
+                console.warn('Nie udało się pobrać adresu IP — limit "1 zdrapka na IP" nie zostanie wymuszony w tej sesji.', err);
+            }
+
+            let existingClaim = null;
+            if (ipKey && window.promoCheckClaim) {
+                existingClaim = await window.promoCheckClaim(ipKey);
+            }
+
+            if (existingClaim) {
+                promoShowLockedState(existingClaim);
+            } else {
+                window.initScratchCard(ipKey || null);
+            }
+        };
+
+        // Inicjalizuje (lub resetuje) zdrapkę za każdym wejściem w widok "Promocja"
+        window.initScratchCard = function (ipKey) {
+            promoIpKey = ipKey || null;
+            promoCanvas = document.getElementById('scratchCanvas');
+            promoBox = document.getElementById('prize-box');
+            if (!promoCanvas || !promoBox) return;
+            promoCtx = promoCanvas.getContext('2d');
+
+            // Losowanie nowej nagrody przy każdym wejściu w widok
+            promoPercent = Math.floor(Math.random() * 11) + 10; // 10–20
+            promoCode = String(Math.floor(1000 + Math.random() * 9000)); // 4 cyfry
+            promoWebhookSent = false;
+            promoRevealed = false;
+            promoScratching = false;
+            promoLastPoint = null;
+            promoCheckCounter = 0;
+
+            document.getElementById('prize-percent').textContent = `-${promoPercent}%`;
+            document.getElementById('prize-code').textContent = promoCode;
+            document.getElementById('copy-code-btn').classList.add('hidden');
+            document.getElementById('prize-content').classList.remove('revealed');
+            document.getElementById('scratch-status').textContent = 'Przeciągnij palcem lub myszką po karcie, aby zdrapać';
+
+            promoCanvas.style.display = '';
+            promoCanvas.style.transition = 'none';
+            promoCanvas.style.opacity = '1';
+
+            promoDrawFoil();
+
+            // Nasłuchiwacze zdarzeń podpinamy tylko raz — funkcje korzystają ze wspólnego, aktualizowanego stanu
+            if (!promoInitialized) {
+                promoCanvas.addEventListener('mousedown', promoStartScratch);
+                promoCanvas.addEventListener('mousemove', promoMoveScratch);
+                window.addEventListener('mouseup', promoEndScratch);
+                promoCanvas.addEventListener('touchstart', promoStartScratch, { passive: false });
+                promoCanvas.addEventListener('touchmove', promoMoveScratch, { passive: false });
+                promoCanvas.addEventListener('touchend', promoEndScratch);
+                window.addEventListener('resize', () => { if (!promoRevealed && promoBox) promoDrawFoil(); });
+                promoInitialized = true;
+            }
+        };
     </script>
 </body>
 </html>
